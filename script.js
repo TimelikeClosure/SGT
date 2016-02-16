@@ -51,7 +51,6 @@ function addStudent() {
  * @param {number} grade
  * @constructor
  */
-
 function Student(name, course, grade) {
     this.name = name;
     this.course = course;
@@ -65,12 +64,11 @@ function Student(name, course, grade) {
 }
 
 /**
- * clearAddStudentForm - clears out the form values based on inputIds variable
+ * removeStudent - removes a student object, based on its input position, from the global student array
+ * @param {number} student_index
  */
-function clearAddStudentForm() {
-    for (var i = 0; i < inputIds.length; i++) {
-        $("#"+inputIds[i]).val("");
-    }
+function removeStudent(student_index) {
+    student_array.splice(student_index, 1);
 }
 
 /**
@@ -161,6 +159,32 @@ function reset() {
  */
 $(document).ready(function(){
     reset();
-
-
 });
+
+var controller = new Controller();
+var view = new View();
+var model = new Model();
+
+/**
+ * Controller - creates an object that handles all input
+ * @constructor
+ */
+function Controller() {
+
+}
+
+/**
+ * View - creates an object that handles all output updates
+ * @constructor
+ */
+function View() {
+
+}
+
+/**
+ * Model - creates an object that handles all business logic
+ * @constructor
+ */
+function Model() {
+
+}
