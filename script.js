@@ -57,6 +57,8 @@ function calculateAverage() {
  * updateData - centralized function to update the average and call student list update
  */
 function updateData() {
+    $(".aveGrade").text(calculateAverage());
+    updateStudentList();
 
 }
 
@@ -64,7 +66,10 @@ function updateData() {
  * updateStudentList - loops through global student array and appends each objects data into the student-list-container > list-body
  */
 function updateStudentList() {
-
+    $(".student-list tbody").html("");
+    for (var i = 0; i < student_array.length; i++) {
+        addStudentToDom(student_array[i]);
+    }
 }
 
 /**
@@ -82,7 +87,7 @@ function addStudentToDom(studentObj) {
 function reset() {
     student_array = [];
     clearAddStudentForm();
-    updateStudentList();
+    updateData();
 }
 
 /**
