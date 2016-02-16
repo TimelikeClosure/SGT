@@ -51,7 +51,6 @@ function addStudent() {
  * @param {number} grade
  * @constructor
  */
-
 function Student(name, course, grade) {
     this.name = name;
     this.course = course;
@@ -161,6 +160,32 @@ function reset() {
  */
 $(document).ready(function(){
     reset();
-
-
 });
+
+var controller = new Controller();
+var view = new View();
+var model = new Model();
+
+/**
+ * Controller - creates an object that handles all input
+ * @constructor
+ */
+function Controller() {
+
+}
+
+/**
+ * View - creates an object that handles all output updates
+ * @constructor
+ */
+function View() {
+
+}
+
+/**
+ * Model - creates an object that handles all business logic
+ * @constructor
+ */
+function Model() {
+
+}
