@@ -130,7 +130,7 @@ function addStudentToDom(studentObj) {
     var student_course = $('<td>').text(studentObj.course);
     var student_grade = $('<td>').text(studentObj.grade);
     var operations = $('<td>');
-    studentObj.element = table_row;
+    studentObj.element = table_row; //studentObj element is the row that holds student info
     var delete_button = $('<button>', {
         type: 'button',
         class: 'btn btn-danger btn-xs',
@@ -145,6 +145,11 @@ function addStudentToDom(studentObj) {
     table_row.append(student_name, student_course, student_grade, operations);
     $('.student-list tbody').append(table_row);
 
+    //success animation for when student's row is added
+    table_row.addClass('alert-success');
+    setTimeout(function() {
+        table_row.removeClass('alert-success');
+    }, 200);
 }
 
 /**
