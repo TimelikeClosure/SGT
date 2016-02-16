@@ -33,7 +33,17 @@ function cancelClicked() {
  * @return undefined
  */
 function addStudent() {
-
+    function Student(name, course, grade) {
+        this.name = name;
+        this.course = course;
+        this.grade = grade;
+    }
+    var inputValues = [];
+    for (var i = 0; i < inputIds.length; i++) {
+        inputValues.push($("#"+inputIds[i]).val());
+    }
+    var student = new Student(inputValues[0], inputValues[1], inputValues[2]);
+    student_array.push(student);
 }
 
 /**
