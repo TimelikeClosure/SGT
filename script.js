@@ -17,14 +17,16 @@ var inputIds = ["studentName", "course", "studentGrade"];
  * addClicked - Event Handler when user clicks the add button
  */
 function addClicked() {
-
+    addStudent();
+    updateData();
+    clearAddStudentForm();
 }
 
 /**
  * cancelClicked - Event Handler when user clicks the cancel button, should clear out student form
  */
 function cancelClicked() {
-
+    clearAddStudentForm();
 }
 
 /**
