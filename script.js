@@ -62,14 +62,32 @@ function clearAddStudentForm() {
  * @returns {number}
  */
 function calculateAverage() {
+    var total = 0;
+    var avg;
 
+    if(student_array.length !== 0) {
+        for(var i = 0; i < student_array.length; i++) {
+            total += parseFloat(student_array[i].grade);
+        }
+        avg = total / student_array.length;
+
+        //Round to the nearest 100ths
+        avg *= 100;
+        avg = Math.round(avg);
+        avg /= 100;
+
+        return avg;
+    }
+    else {
+        return 0;
+    }
 }
 
 /**
  * updateData - centralized function to update the average and call student list update
  */
 function updateData() {
-    $(".aveGrade").text(calculateAverage());
+    $(".avgGrade").text(calculateAverage());
     updateStudentList();
 
 }
