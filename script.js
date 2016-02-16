@@ -51,11 +51,18 @@ function addStudent() {
  * @param {number} grade
  * @constructor
  */
-
 function Student(name, course, grade) {
     this.name = name;
     this.course = course;
     this.grade = grade;
+}
+
+/**
+ * removeStudent - removes a student object, based on its input position, from the global student array
+ * @param {number} student_index
+ */
+function removeStudent(student_index) {
+    student_array.splice(student_index, 1);
 }
 
 /**
