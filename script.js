@@ -102,8 +102,8 @@ function addStudentToDom(studentObj) {
         text: 'Delete'
     });
 
-    $(operations).append(delete_button);
-    $(table_row).append(student_name, student_course, student_grade, operations);
+    operations.append(delete_button);
+    table_row.append(student_name, student_course, student_grade, operations);
     $('.student-list tbody').append(table_row);
 
 }
