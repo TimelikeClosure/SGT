@@ -55,6 +55,12 @@ function Student(name, course, grade) {
     this.name = name;
     this.course = course;
     this.grade = grade;
+    this.element;
+
+    this.delete_self = function() {
+        student_array.splice(this.element.index(), 1);
+        this.element.remove();
+    }
 }
 
 /**
@@ -131,10 +137,15 @@ function addStudentToDom(studentObj) {
     var student_course = $('<td>').text(studentObj.course);
     var student_grade = $('<td>').text(studentObj.grade);
     var operations = $('<td>');
+    studentObj.element = table_row;
     var delete_button = $('<button>', {
         type: 'button',
         class: 'btn btn-danger btn-xs',
         text: 'Delete'
+
+    }).click(function() {
+        console.log('student index', studentObj.element.index());
+        studentObj.delete_self();
     });
 
     operations.append(delete_button);
@@ -157,4 +168,6 @@ function reset() {
  */
 $(document).ready(function(){
     reset();
+
+
 });
