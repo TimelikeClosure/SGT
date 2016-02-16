@@ -11,7 +11,7 @@ var student_array = [];
  * inputIds - id's of the elements that are used to add students
  * @type {string[]}
  */
-var inputIds = {};
+var inputIds = ["studentName", "course", "studentGrade"];
 
 /**
  * addClicked - Event Handler when user clicks the add button
