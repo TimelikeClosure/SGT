@@ -17,14 +17,16 @@ var inputIds = ["studentName", "course", "studentGrade"];
  * addClicked - Event Handler when user clicks the add button
  */
 function addClicked() {
-
+    addStudent();
+    updateData();
+    clearAddStudentForm();
 }
 
 /**
  * cancelClicked - Event Handler when user clicks the cancel button, should clear out student form
  */
 function cancelClicked() {
-
+    clearAddStudentForm();
 }
 
 /**
@@ -88,6 +90,21 @@ function updateStudentList() {
  * @param studentObj
  */
 function addStudentToDom(studentObj) {
+
+    var table_row = $('<tr>');
+    var student_name = $('<td>').text(studentObj.name);
+    var student_course = $('<td>').text(studentObj.course);
+    var student_grade = $('<td>').text(studentObj.grade);
+    var operations = $('<td>');
+    var delete_button = $('<button>', {
+        type: 'button',
+        class: 'btn btn-danger btn-xs',
+        text: 'Delete'
+    });
+
+    operations.append(delete_button);
+    table_row.append(student_name, student_course, student_grade, operations);
+    $('.student-list tbody').append(table_row);
 
 }
 
