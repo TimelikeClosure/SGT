@@ -40,7 +40,9 @@ function addStudent() {
  * clearAddStudentForm - clears out the form values based on inputIds variable
  */
 function clearAddStudentForm() {
-
+    for (var i = 0; i < inputIds.length; i++) {
+        $("#"+inputIds[i]).val("");
+    }
 }
 
 /**
@@ -78,12 +80,14 @@ function addStudentToDom(studentObj) {
  * reset - resets the application to initial state. Global variables reset, DOM get reset to initial load state
  */
 function reset() {
-
+    student_array = [];
+    clearAddStudentForm();
+    updateStudentList();
 }
 
 /**
  * Listen for the document to load and reset the data to the initial state
  */
 $(document).ready(function(){
-
+    reset();
 });
