@@ -72,15 +72,6 @@ function removeStudent(student_index) {
 }
 
 /**
- * clearAddStudentForm - clears out the form values based on inputIds variable
- */
-function clearAddStudentForm() {
-    for (var i = 0; i < inputIds.length; i++) {
-        $("#"+inputIds[i]).val("");
-    }
-}
-
-/**
  * calculateAverage - loop through the global student array and calculate average grade and return that value
  * @returns {number}
  */
