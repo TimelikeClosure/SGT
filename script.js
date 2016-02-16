@@ -64,11 +64,12 @@ function Student(name, course, grade) {
 }
 
 /**
- * removeStudent - removes a student object, based on its input position, from the global student array
- * @param {number} student_index
+ * clearAddStudentForm - clears out the form values based on inputIds variable
  */
-function removeStudent(student_index) {
-    student_array.splice(student_index, 1);
+function clearAddStudentForm() {
+    for (var i = 0; i < inputIds.length; i++) {
+        $("#"+inputIds[i]).val("");
+    }
 }
 
 /**
