@@ -33,7 +33,7 @@ function Controller() {
     this.addClicked = function() {
         model.addStudent();
         //view.updateData();
-        $(".avgGrade").text(model.calculateAverage());
+        view.updateAvg();
         view.clearAddStudentForm();
     };
 
@@ -74,10 +74,14 @@ function View() {
      * updateData - centralized function to update the average and call student list update
      */
     this.updateData = function() {
-        $(".avgGrade").text(model.calculateAverage());
+        view.updateAvg();
         view.updateStudentList();
 
     };
+
+    this.updateAvg = function() {
+        $(".avgGrade").text(model.calculateAverage());
+    }
 
     /**
      * updateStudentList - loops through global student array and appends each objects data into the student-list-container > list-body
@@ -108,8 +112,8 @@ function View() {
             text: 'Delete'
 
         }).click(function () {
-            console.log('student index', studentObj.element.index());
             studentObj.delete_self();
+            view.updateAvg();
         });
 
         operations.append(delete_button);
