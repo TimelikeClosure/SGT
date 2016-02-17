@@ -203,7 +203,7 @@ function Model() {
             $(this.student_array[i].element).removeClass('alert-danger alert-success');
             var currentGrade = parseFloat(this.student_array[i].grade);
             var currentStudent = this.student_array[i];
-            console.log(currentGrade, typeof  currentGrade, highestGrade, lowestGrade);
+            //console.log(currentGrade, typeof  currentGrade, highestGrade, lowestGrade);
             //if grade is higher than highestGrade reset topStudents array and put current student inside
             if(highestGrade < currentGrade){
                 highestGrade = currentGrade;
@@ -227,7 +227,7 @@ function Model() {
         }
         //check for a grade tie;
         if(highestGrade == lowestGrade){
-            console.log("this looks like communism")
+            //console.log("this looks like communism")
             return;
         }
         //loop through each student holder array and apply correct class;
