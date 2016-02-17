@@ -26,6 +26,7 @@ function addStudent() {
     }
     var student = new Student(inputValues[0], inputValues[1], inputValues[2]);
     student_array.push(student);
+    view.addStudentToDom(student);
 }
 
 /**
@@ -91,12 +92,15 @@ var model = new Model();
  */
 function Controller() {
 
+
+
     /**
      * addClicked - Event Handler when user clicks the add button
      */
     this.addClicked = function() {
+        view.new_student = true;
         addStudent();
-        view.updateData();
+        //view.updateData();
         view.clearAddStudentForm();
     };
 
@@ -124,7 +128,7 @@ function Controller() {
  */
 function View() {
 
-
+    this.new_student = false;
     /**
      * clearAddStudentForm - clears out the form values based on inputIds variable
      */
@@ -179,6 +183,17 @@ function View() {
         operations.append(delete_button);
         table_row.append(student_name, student_course, student_grade, operations);
         $('.student-list tbody').append(table_row);
+
+        //success animation for when student's row is added
+        if(this.new_student) {
+            console.log(this.new_student, table_row.index());
+            table_row.addClass('alert-success');
+            setTimeout(function() {
+                table_row.removeClass('alert-success');
+            }, 200);
+            this.new_student = false;
+        }
+
 
     }
 }
