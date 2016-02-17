@@ -14,22 +14,6 @@ var student_array = [];
 var inputIds = ["studentName", "course", "studentGrade"];
 
 /**
- * addClicked - Event Handler when user clicks the add button
- */
-function addClicked() {
-    addStudent();
-    updateData();
-    clearAddStudentForm();
-}
-
-/**
- * cancelClicked - Event Handler when user clicks the cancel button, should clear out student form
- */
-function cancelClicked() {
-    clearAddStudentForm();
-}
-
-/**
  * addStudent - creates a student objects based on input fields in the form and adds the object to global student array
  *
  * @return undefined
@@ -103,18 +87,44 @@ function reset() {
  * Listen for the document to load and reset the data to the initial state
  */
 $(document).ready(function(){
-    reset();
+    controller.reset();
 });
 
 var controller = new Controller();
 var view = new View();
 var model = new Model();
 
+
 /**
  * Controller - creates an object that handles all input
  * @constructor
  */
 function Controller() {
+
+    /**
+     * addClicked - Event Handler when user clicks the add button
+     */
+    this.addClicked = function() {
+        addStudent();
+        view.updateData();
+        view.clearAddStudentForm();
+    };
+
+    /**
+     * cancelClicked - Event Handler when user clicks the cancel button, should clear out student form
+     */
+    this.cancelClicked = function() {
+        view.clearAddStudentForm();
+    };
+
+    /**
+     * reset - resets the application to initial state. Global variables reset, DOM get reset to initial load state
+     */
+    this.reset = function() {
+        student_array = [];
+        view.clearAddStudentForm();
+        view.updateData();
+    };
 
 }
 
@@ -128,28 +138,28 @@ function View() {
     /**
      * clearAddStudentForm - clears out the form values based on inputIds variable
      */
-    function clearAddStudentForm() {
+    this.clearAddStudentForm = function(){
         for (var i = 0; i < inputIds.length; i++) {
-            $("#"+inputIds[i]).val("");
+            $("#" + inputIds[i]).val("");
         }
     }
 
     /**
      * updateData - centralized function to update the average and call student list update
      */
-    function updateData() {
+    this.updateData = function() {
         $(".avgGrade").text(calculateAverage());
-        updateStudentList();
+        view.updateStudentList();
 
     }
 
     /**
      * updateStudentList - loops through global student array and appends each objects data into the student-list-container > list-body
      */
-    function updateStudentList() {
+    this.updateStudentList = function() {
         $(".student-list tbody").html("");
         for (var i = 0; i < student_array.length; i++) {
-            addStudentToDom(student_array[i]);
+            view.addStudentToDom(student_array[i]);
         }
     }
 
@@ -158,7 +168,7 @@ function View() {
      * into the .student_list tbody
      * @param studentObj
      */
-    function addStudentToDom(studentObj) {
+    this.addStudentToDom = function(studentObj) {
 
         var table_row = $('<tr>');
         var student_name = $('<td>').text(studentObj.name);
@@ -171,7 +181,7 @@ function View() {
             class: 'btn btn-danger btn-xs',
             text: 'Delete'
 
-        }).click(function() {
+        }).click(function () {
             console.log('student index', studentObj.element.index());
             studentObj.delete_self();
         });
@@ -181,8 +191,9 @@ function View() {
         $('.student-list tbody').append(table_row);
 
     }
-
 }
+
+
 
 /**
  * Model - creates an object that handles all business logic
