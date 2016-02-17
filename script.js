@@ -51,7 +51,6 @@ function addStudent() {
  * @param {number} grade
  * @constructor
  */
-
 function Student(name, course, grade) {
     this.name = name;
     this.course = course;
@@ -64,14 +63,6 @@ function Student(name, course, grade) {
     }
 }
 
-/**
- * clearAddStudentForm - clears out the form values based on inputIds variable
- */
-function clearAddStudentForm() {
-    for (var i = 0; i < inputIds.length; i++) {
-        $("#"+inputIds[i]).val("");
-    }
-}
 
 /**
  * calculateAverage - loop through the global student array and calculate average grade and return that value
@@ -100,59 +91,6 @@ function calculateAverage() {
 }
 
 /**
- * updateData - centralized function to update the average and call student list update
- */
-function updateData() {
-    $(".avgGrade").text(calculateAverage());
-    updateStudentList();
-
-}
-
-/**
- * updateStudentList - loops through global student array and appends each objects data into the student-list-container > list-body
- */
-function updateStudentList() {
-    $(".student-list tbody").html("");
-    for (var i = 0; i < student_array.length; i++) {
-        addStudentToDom(student_array[i]);
-    }
-}
-
-/**
- * addStudentToDom - take in a student object, create html elements from the values and then append the elements
- * into the .student_list tbody
- * @param studentObj
- */
-function addStudentToDom(studentObj) {
-
-    var table_row = $('<tr>');
-    var student_name = $('<td>').text(studentObj.name);
-    var student_course = $('<td>').text(studentObj.course);
-    var student_grade = $('<td>').text(studentObj.grade);
-    var operations = $('<td>');
-    studentObj.element = table_row; //studentObj element is the row that holds student info
-    var delete_button = $('<button>', {
-        type: 'button',
-        class: 'btn btn-danger btn-xs',
-        text: 'Delete'
-
-    }).click(function() {
-        console.log('student index', studentObj.element.index());
-        studentObj.delete_self();
-    });
-
-    operations.append(delete_button);
-    table_row.append(student_name, student_course, student_grade, operations);
-    $('.student-list tbody').append(table_row);
-
-    //success animation for when student's row is added
-    table_row.addClass('alert-success');
-    setTimeout(function() {
-        table_row.removeClass('alert-success');
-    }, 200);
-}
-
-/**
  * reset - resets the application to initial state. Global variables reset, DOM get reset to initial load state
  */
 function reset() {
@@ -166,6 +104,90 @@ function reset() {
  */
 $(document).ready(function(){
     reset();
-
-
 });
+
+var controller = new Controller();
+var view = new View();
+var model = new Model();
+
+/**
+ * Controller - creates an object that handles all input
+ * @constructor
+ */
+function Controller() {
+
+}
+
+/**
+ * View - creates an object that handles all output updates
+ * @constructor
+ */
+function View() {
+
+
+    /**
+     * clearAddStudentForm - clears out the form values based on inputIds variable
+     */
+    function clearAddStudentForm() {
+        for (var i = 0; i < inputIds.length; i++) {
+            $("#"+inputIds[i]).val("");
+        }
+    }
+
+    /**
+     * updateData - centralized function to update the average and call student list update
+     */
+    function updateData() {
+        $(".avgGrade").text(calculateAverage());
+        updateStudentList();
+
+    }
+
+    /**
+     * updateStudentList - loops through global student array and appends each objects data into the student-list-container > list-body
+     */
+    function updateStudentList() {
+        $(".student-list tbody").html("");
+        for (var i = 0; i < student_array.length; i++) {
+            addStudentToDom(student_array[i]);
+        }
+    }
+
+    /**
+     * addStudentToDom - take in a student object, create html elements from the values and then append the elements
+     * into the .student_list tbody
+     * @param studentObj
+     */
+    function addStudentToDom(studentObj) {
+
+        var table_row = $('<tr>');
+        var student_name = $('<td>').text(studentObj.name);
+        var student_course = $('<td>').text(studentObj.course);
+        var student_grade = $('<td>').text(studentObj.grade);
+        var operations = $('<td>');
+        studentObj.element = table_row;
+        var delete_button = $('<button>', {
+            type: 'button',
+            class: 'btn btn-danger btn-xs',
+            text: 'Delete'
+
+        }).click(function() {
+            console.log('student index', studentObj.element.index());
+            studentObj.delete_self();
+        });
+
+        operations.append(delete_button);
+        table_row.append(student_name, student_course, student_grade, operations);
+        $('.student-list tbody').append(table_row);
+
+    }
+
+}
+
+/**
+ * Model - creates an object that handles all business logic
+ * @constructor
+ */
+function Model() {
+
+}
