@@ -25,12 +25,14 @@ var model = new Model();
  */
 function Controller() {
 
+
+
     /**
      * addClicked - Event Handler when user clicks the add button
      */
     this.addClicked = function() {
         model.addStudent();
-        view.updateData();
+        //view.updateData();
         view.clearAddStudentForm();
     };
 
@@ -57,7 +59,6 @@ function Controller() {
  * @constructor
  */
 function View() {
-
 
     /**
      * clearAddStudentForm - clears out the form values based on inputIds variable
@@ -114,6 +115,12 @@ function View() {
         table_row.append(student_name, student_course, student_grade, operations);
         $('.student-list tbody').append(table_row);
 
+        //success animation for when student's row is added
+        table_row.addClass('alert-success');
+        setTimeout(function() {
+            table_row.removeClass('alert-success');
+        }, 200);
+
     };
 }
 
@@ -144,6 +151,7 @@ function Model() {
         }
         var student = new Student(inputValues[0], inputValues[1], inputValues[2]);
         this.student_array.push(student);
+        view.addStudentToDom(student);
     };
 
     /**
