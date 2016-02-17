@@ -33,6 +33,7 @@ function Controller() {
     this.addClicked = function() {
         model.addStudent();
         //view.updateData();
+        $(".avgGrade").text(model.calculateAverage());
         view.clearAddStudentForm();
     };
 
