@@ -181,7 +181,36 @@ function Model() {
         }
     };
 
+    this.highlightTopGrade = function(){
+        var highestGrade = this.student_array[0].grade;
+        var student = this.student_array[0];
+        for(var i = 1; i < this.student_array.length; i++){
+            if($(this.student_array[i].element.hasClass('alert-success'))){
+                $(this.student_array[i].element.removeClass('alert-success'))
+            }
+            if(highestGrade < this.student_array[i].grade){
+                highestGrade = this.student_array[i].grade;
+                student = this.student_array[i];
+            }
+        }
+        $(student.element.addClass('alert-success'));
+    };
 
+    this.highlightLowGrade = function(){
+        var lowestGrade = this.student_array[0].grade;
+        var student = this.student_array[0];
+        for(var i = 1; i < this.student_array.length; i++){
+            if($(this.student_array[i].element.hasClass('alert-danger'))){
+                $(this.student_array[i].element.removeClass('alert-danger'))
+            }
+            if(lowestGrade > this.student_array[i].grade){
+                lowestGrade = this.student_array[i].grade;
+                student = this.student_array[i];
+            }
+        }
+        $(student.element.addClass('alert-danger'));
+
+    }
 }
 
 /**
