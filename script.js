@@ -2,12 +2,6 @@
  * Define all global variables here
  */
 /**
- * student_array - global array to hold student objects
- * @type {Array}
- */
-var student_array = [];
-
-/**
  * inputIds - id's of the elements that are used to add students
  * @type {string[]}
  */
@@ -167,7 +161,7 @@ function Controller() {
      * reset - resets the application to initial state. Global variables reset, DOM get reset to initial load state
      */
     this.reset = function() {
-        student_array = [];
+        model.resetStudentArray();
         clearAddStudentForm();
         updateData();
     };
@@ -187,5 +181,15 @@ function View() {
  * @constructor
  */
 function Model() {
+
+    /**
+     * student_array - array to hold student objects
+     * @type {Array}
+     */
+    var student_array = [];
+
+    this.resetStudentArray = function() {
+        student_array = [];
+    }
 
 }
