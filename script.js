@@ -33,7 +33,9 @@ function Controller() {
     this.addClicked = function() {
         model.addStudent();
         //view.updateData();
-        view.updateView();
+        setTimeout(function(){
+            view.updateView();
+        },200)
         view.clearAddStudentForm();
     };
 
@@ -189,8 +191,8 @@ function Model() {
     //highlights all lowest and highest grades in the student array
     this.highlightGrades = function(){
         //initialize the starting grades and students and grade holders;
-        var highestGrade = this.student_array[0].grade;
-        var lowestGrade = this.student_array[0].grade;
+        var highestGrade = parseFloat(this.student_array[0].grade);
+        var lowestGrade = highestGrade;
         var topStudent = this.student_array[0];
         var lowStudent = this.student_array[0];
         var topStudents = [];
@@ -199,25 +201,28 @@ function Model() {
         for(var i = 0; i < this.student_array.length; i++){
             //remove any previous highlights
             $(this.student_array[i].element).removeClass('alert-danger alert-success');
+            var currentGrade = parseFloat(this.student_array[i].grade);
+            var currentStudent = this.student_array[i];
+            console.log(currentGrade, typeof  currentGrade, highestGrade, lowestGrade);
             //if grade is higher than highestGrade reset topStudents array and put current student inside
-            if(highestGrade < this.student_array[i].grade){
-                highestGrade = this.student_array[i].grade;
-                topStudent = this.student_array[i];
+            if(highestGrade < currentGrade){
+                highestGrade = currentGrade;
+                topStudent = currentStudent;
                 topStudents = [topStudent];
             }
             //if highestGrade is equal to current student grade add them to topStudents
-            else if(highestGrade == this.student_array[i].grade){
-                topStudents.push(this.student_array[i]);
+            else if(highestGrade == currentGrade){
+                topStudents.push(currentStudent);
             }
             //if grade is lower than lowestGrade reset lowStudents array and put current student inside
-            if(lowestGrade > this.student_array[i].grade){
-                lowestGrade = this.student_array[i].grade;
-                lowStudent = this.student_array[i];
+            if(lowestGrade > currentGrade){
+                lowestGrade = currentGrade;
+                lowStudent = currentStudent;
                 lowStudents = [lowStudent];
             }
             //if lowestGrade is equal to current student grade add them to lowStudents
-            else if(lowestGrade == this.student_array[i].grade){
-                lowStudents.push(this.student_array[i]);
+            else if(lowestGrade == currentGrade){
+                lowStudents.push(currentStudent);
             }
         }
         //check for a grade tie;
@@ -226,11 +231,11 @@ function Model() {
             return;
         }
         //loop through each student holder array and apply correct class;
-        for(var i in topStudents){
-            $(topStudents[i].element.addClass('alert-success'));
+        for(var t in topStudents){
+            $(topStudents[t].element.addClass('alert-success'));
         }
-        for(var i in lowStudents){
-            $(lowStudents[i].element.addClass('alert-danger'));
+        for(var l in lowStudents){
+            $(lowStudents[l].element.addClass('alert-danger'));
         }
     };
 }
