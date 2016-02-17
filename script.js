@@ -47,7 +47,6 @@ function Student(name, course, grade) {
     }
 }
 
-
 /**
  * calculateAverage - loop through the global student array and calculate average grade and return that value
  * @returns {number}
@@ -72,15 +71,6 @@ function calculateAverage() {
     else {
         return 0;
     }
-}
-
-/**
- * reset - resets the application to initial state. Global variables reset, DOM get reset to initial load state
- */
-function reset() {
-    student_array = [];
-    clearAddStudentForm();
-    updateData();
 }
 
 /**
