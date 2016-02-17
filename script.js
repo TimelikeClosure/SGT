@@ -33,7 +33,7 @@ function Controller() {
     this.addClicked = function() {
         model.addStudent();
         //view.updateData();
-        view.updateAvg();
+        view.updateView();
         view.clearAddStudentForm();
     };
 
@@ -74,13 +74,15 @@ function View() {
      * updateData - centralized function to update the average and call student list update
      */
     this.updateData = function() {
-        view.updateAvg();
-        view.updateStudentList();
+        view.updateView();
 
     };
 
-    this.updateAvg = function() {
+    this.updateView = function() {
         $(".avgGrade").text(model.calculateAverage());
+        if(model.student_array.length > 0){
+            model.highlightGrades();
+        }
     }
 
     /**
@@ -113,7 +115,7 @@ function View() {
 
         }).click(function () {
             studentObj.delete_self();
-            view.updateAvg();
+            view.updateView();
         });
 
         operations.append(delete_button);
