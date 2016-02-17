@@ -180,37 +180,53 @@ function Model() {
             return 0;
         }
     };
-
-    this.highlightTopGrade = function(){
+    //highlights all lowest and highest grades in the student array
+    this.highlightGrades = function(){
+        //initialize the starting grades and students and grade holders;
         var highestGrade = this.student_array[0].grade;
-        var student = this.student_array[0];
-        for(var i = 1; i < this.student_array.length; i++){
-            if($(this.student_array[i].element.hasClass('alert-success'))){
-                $(this.student_array[i].element.removeClass('alert-success'))
-            }
+        var lowestGrade = this.student_array[0].grade;
+        var topStudent = this.student_array[0];
+        var lowStudent = this.student_array[0];
+        var topStudents = [];
+        var lowStudents = [];
+        //loop through the student array
+        for(var i = 0; i < this.student_array.length; i++){
+            //remove any previous highlights
+            $(this.student_array[i].element).removeClass('alert-danger alert-success');
+            //if grade is higher than highestGrade reset topStudents array and put current student inside
             if(highestGrade < this.student_array[i].grade){
                 highestGrade = this.student_array[i].grade;
-                student = this.student_array[i];
+                topStudent = this.student_array[i];
+                topStudents = [topStudent];
             }
-        }
-        $(student.element.addClass('alert-success'));
-    };
-
-    this.highlightLowGrade = function(){
-        var lowestGrade = this.student_array[0].grade;
-        var student = this.student_array[0];
-        for(var i = 1; i < this.student_array.length; i++){
-            if($(this.student_array[i].element.hasClass('alert-danger'))){
-                $(this.student_array[i].element.removeClass('alert-danger'))
+            //if highestGrade is equal to current student grade add them to topStudents
+            else if(highestGrade == this.student_array[i].grade){
+                topStudents.push(this.student_array[i]);
             }
+            //if grade is lower than lowestGrade reset lowStudents array and put current student inside
             if(lowestGrade > this.student_array[i].grade){
                 lowestGrade = this.student_array[i].grade;
-                student = this.student_array[i];
+                lowStudent = this.student_array[i];
+                lowStudents = [lowStudent];
+            }
+            //if lowestGrade is equal to current student grade add them to lowStudents
+            else if(lowestGrade == this.student_array[i].grade){
+                lowStudents.push(this.student_array[i]);
             }
         }
-        $(student.element.addClass('alert-danger'));
-
-    }
+        //check for a grade tie;
+        if(highestGrade == lowestGrade){
+            console.log("this looks like communism")
+            return;
+        }
+        //loop through each student holder array and apply correct class;
+        for(var i in topStudents){
+            $(topStudents[i].element.addClass('alert-success'));
+        }
+        for(var i in lowStudents){
+            $(lowStudents[i].element.addClass('alert-danger'));
+        }
+    };
 }
 
 /**
