@@ -8,6 +8,7 @@
 var inputIds = ["studentName", "course", "studentGrade"];
 var timer = null;
 var courseList = {};
+var input = "";
 /**
  * Listen for the document to load and reset the data to the initial state
  */
@@ -265,12 +266,13 @@ function Student(name, course, grade) {
  * keyPressTimer - function that is called on key press up and will show a drop down list
  */
 function keyPressTimer() {
-    var input = $(this).text();
-    console.log(input);
+    input = $('#course').val();
     if (timer != null) {
         clearTimeout(timer);
     }
-    timer = setTimeout('showCourseList()', 500);
+    if (input.length > 0) {
+        timer = setTimeout('showCourseList()', 500);
+    }
 }
 /**
  * showCourseList
@@ -281,7 +283,9 @@ function showCourseList() {
         courseList[course] = 1;
     }
     for (var property in courseList) {
-        console.log(property.substr(0, 2));
+        if (input.toUpperCase() == (property.substr(0, input.length)).toUpperCase()) {
+            console.log("Update drop down");
+        }
     }
 }
 //this does not exist
