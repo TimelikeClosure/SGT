@@ -9,6 +9,7 @@ var inputIds = ["studentName", "course", "studentGrade"];
 var timer = null;
 var courseList = {};
 var input = "";
+var dropDownArray = [];
 /**
  * Listen for the document to load and reset the data to the initial state
  */
@@ -279,15 +280,18 @@ function keyPressTimer() {
  * showCourseList
  */
 function showCourseList() {
+    dropDownArray = [];
     for (var i in model.student_array) {
         var course = model.student_array[i].course;
         courseList[course] = 1;
     }
     for (var property in courseList) {
         if (input.toUpperCase() == (property.substr(0, input.length)).toUpperCase()) {
-            console.log("Update drop down");
+            dropDownArray.push(property);
         }
     }
+    //call drop down here
+
 }
 //this does not exist
 function callDatabase() {
