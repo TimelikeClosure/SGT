@@ -9,12 +9,14 @@ var inputIds = ["studentName", "course", "studentGrade"];
 var timer = null;
 var courseList = {};
 var input = "";
-var dropDownArray = [];
+//var dropDownArray = [];
 /**
  * Listen for the document to load and reset the data to the initial state
  */
 $(document).ready(function(){
     controller.reset();
+
+    $("")
 });
 
 var controller = new Controller();
@@ -280,7 +282,7 @@ function keyPressTimer() {
  * showCourseList
  */
 function showCourseList() {
-    dropDownArray = [];
+    var dropDownArray = [];
     for (var i in model.student_array) {
         var course = model.student_array[i].course;
         courseList[course] = 1;
@@ -290,7 +292,7 @@ function showCourseList() {
             dropDownArray.push(property);
         }
     }
-    //call drop down here
+    displayAutoList(dropDownArray);
 
 }
 //this does not exist
@@ -315,14 +317,18 @@ function callDatabase() {
 var dum = ["yo","bro","app","cool"];
 
 function displayAutoList(display){
-    var ul = $("<ul>");
-    $("#course").empty()
+
+    $("#autothis").empty();
+
+    var ul = $("<ul>",{
+        class: "autofill"
+    });
+
     for(var i = 0; i < display.length; i++){
         var li = $("<li>",{
-            text: display[i],
-            class: "autofill"
+            text: display[i]
         });
         $(ul).append(li);
     }
-    $("#course").append(ul);
+    $("#autothis").append(ul);
 }

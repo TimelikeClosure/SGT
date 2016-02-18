@@ -2,6 +2,10 @@ tr {
     transition: .5s linear all;
 }
 .autofill{
-    position:absolute;
-
+    position: absolute;
+    top: 100%;
+    z-index: 23;
+    font-size: 50px;
+    background-color: green;
+    color: yellow;
 }
