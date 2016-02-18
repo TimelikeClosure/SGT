@@ -6,7 +6,8 @@
  * @type {string[]}
  */
 var inputIds = ["studentName", "course", "studentGrade"];
-
+var timer = null;
+var courseList = {};
 /**
  * Listen for the document to load and reset the data to the initial state
  */
@@ -258,4 +259,47 @@ function Student(name, course, grade) {
         model.student_array.splice(index, 1);
         this.element.remove();
     }
+}
+//EXPERIMENTAL STUFF
+/**
+ * keyPressTimer - function that is called on key press up and will show a drop down list
+ */
+function keyPressTimer() {
+    var input = $(this).text();
+    console.log(input);
+    if (timer != null) {
+        clearTimeout(timer);
+    }
+    timer = setTimeout('showCourseList()', 500);
+}
+/**
+ * showCourseList
+ */
+function showCourseList() {
+    for (var i in model.student_array) {
+        var course = model.student_array[i].course;
+        courseList[course] = 1;
+    }
+    for (var property in courseList) {
+        console.log(property.substr(0, 2));
+    }
+}
+//this does not exist
+function callDatabase() {
+    $.ajax({
+        type: "POST",
+        dataType: 'json',
+        data: {
+            api_key: apiKey
+        },
+        url: 'http://s-apis.learningfuze.com/sgt/get',
+        success: function (result) {
+            for (var i  in result.data) {
+                addStudentToDom(result.data[i]);
+                students.push(result.data[i]);
+            }
+            ;
+            $(".avgGrade").text(calculateAverage());
+        }
+    });
 }
