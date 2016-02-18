@@ -265,7 +265,7 @@ function Student(name, course, grade) {
  * keyPressTimer - function that is called on key press up and will show a drop down list
  */
 function keyPressTimer() {
-    var input = $(this).text();
+    var input = $("#course").val();
     console.log(input);
     if (timer != null) {
         clearTimeout(timer);
@@ -302,4 +302,19 @@ function callDatabase() {
             $(".avgGrade").text(calculateAverage());
         }
     });
+}
+var dum = ["yo","bro","app","cool"];
+var tempList;
+function displayAutoList(display){
+    var ul = $("<ul>");
+    tempList = null;
+    for(var i = 0; i < display.length; i++){
+        var li = $("<li>",{
+            text: display[i]
+        });
+        $(ul).append(li);
+    }
+    tempList = ul;
+    console.log(tempList);
+    $("#course").append(ul);
 }
