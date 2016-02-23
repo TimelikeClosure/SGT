@@ -1,0 +1,25 @@
+tr {
+    transition: .5s linear all;
+}
+.autofill{
+    padding: 5px;
+    position: absolute;
+    border: 1px solid black;
+    top: 175%;
+    left: 200%;
+    z-index: 23;
+    background: white;
+    font-size: 15px;
+    font-family: 'Lucida Grande', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+}
+.autofill li{
+    list-style: none;
+    text-align: left;
+}
+
+.autofill li:hover{
+    color: #ff272f;
+    cursor: pointer;
+}
+
