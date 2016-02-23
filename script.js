@@ -16,6 +16,8 @@ var input = "";
 $(document).ready(function () {
     controller.reset();
     $("")
+
+
 });
 
 var controller = new Controller();
