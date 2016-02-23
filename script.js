@@ -1,11 +1,6 @@
 /**
  * Define all global variables here
  */
-/**
- * inputIds - id's of the elements that are used to add students
- * @type {string[]}
- */
-var inputIds = ["studentName", "course", "studentGrade"];
 var timer = null;
 var courseList = {};
 var input = "";
@@ -36,7 +31,7 @@ function Controller() {
         //view.updateData();
         setTimeout(function () {
             view.updateView();
-        }, 200)
+        }, 200);
         view.clearAddStudentForm();
     };
 
@@ -65,11 +60,17 @@ function Controller() {
 function View() {
 
     /**
+     * inputIds - id's of the elements that are used to add students
+     * @type {string[]}
+     */
+    this.inputIds = ["studentName", "course", "studentGrade"];
+
+    /**
      * clearAddStudentForm - clears out the form values based on inputIds variable
      */
     this.clearAddStudentForm = function () {
-        for (var i = 0; i < inputIds.length; i++) {
-            $("#" + inputIds[i]).val("");
+        for (var i = 0; i < this.inputIds.length; i++) {
+            $("#" + this.inputIds[i]).val("");
         }
     };
 
@@ -154,8 +155,8 @@ function Model() {
     this.addStudent = function () {
 
         var inputValues = [];
-        for (var i = 0; i < inputIds.length; i++) {
-            inputValues.push($("#" + inputIds[i]).val());
+        for (var i = 0; i < view.inputIds.length; i++) {
+            inputValues.push($("#" + view.inputIds[i]).val());
         }
         var student = new Student(inputValues[0], inputValues[1], inputValues[2]);
         this.student_array.push(student);
