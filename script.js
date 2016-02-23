@@ -1,34 +1,28 @@
+"use strict";
 /**
  * Define all global variables here
  */
-/**
- * inputIds - id's of the elements that are used to add students
- * @type {string[]}
- */
-var inputIds = ["studentName", "course", "studentGrade"];
-var timer = null;
-var courseList = {};
-var input = "";
 //var dropDownArray = [];
 /**
  * Listen for the document to load and reset the data to the initial state
  */
 $(document).ready(function () {
     controller.reset();
-    $("")
-
-
 });
 
+//  Begin global object instantiation
 var controller = new Controller();
 var view = new View();
 var model = new Model();
+//  End global object instantiation
 
 /**
  * Controller - creates an object that handles all input
  * @constructor
  */
 function Controller() {
+
+    this.inputTimer = null;
 
     /**
      * addClicked - Event Handler when user clicks the add button
@@ -38,7 +32,7 @@ function Controller() {
         //view.updateData();
         setTimeout(function () {
             view.updateView();
-        }, 200)
+        }, 200);
         view.clearAddStudentForm();
     };
 
@@ -58,6 +52,26 @@ function Controller() {
         view.updateData();
     };
 
+    /**
+     * studentCourseAutoFillShowTimer - starts timer to update and show student course autofill list
+     */
+    this.studentCourseAutoFillShowTimer = function() {
+        if (this.inputTimer != null) {
+            clearTimeout(this.inputTimer);
+        }
+        this.inputTimer = setTimeout(view.displayCourseAutoFillList(model.courseList.searchForMatchList($('#course').val())), 500);
+    };
+
+    /**
+     * studentCourseAutoFillHideTimer - starts timer to hide student course autofill list
+     */
+    this.studentCourseAutoFillHideTimer = function() {
+        if (this.inputTimer != null) {
+            clearTimeout(this.inputTimer);
+        }
+        this.inputTimer = setTimeout(view.displayCourseAutoFillList([]), 500);
+    };
+
 }
 
 /**
@@ -67,11 +81,17 @@ function Controller() {
 function View() {
 
     /**
+     * inputIds - id's of the elements that are used to add students
+     * @type {string[]}
+     */
+    this.inputIds = ["studentName", "course", "studentGrade"];
+
+    /**
      * clearAddStudentForm - clears out the form values based on inputIds variable
      */
     this.clearAddStudentForm = function () {
-        for (var i = 0; i < inputIds.length; i++) {
-            $("#" + inputIds[i]).val("");
+        for (var i = 0; i < this.inputIds.length; i++) {
+            $("#" + this.inputIds[i]).val("");
         }
     };
 
@@ -88,7 +108,7 @@ function View() {
         if (model.student_array.length > 0) {
             model.highlightGrades();
         }
-    }
+    };
 
     /**
      * updateStudentList - loops through global student array and appends each objects data into the student-list-container > list-body
@@ -106,7 +126,6 @@ function View() {
      * @param studentObj
      */
     this.addStudentToDom = function (studentObj) {
-        courseList[studentObj.course] = 1;
         var table_row = $('<tr>');
         var student_name = $('<td>').text(studentObj.name);
         var student_course = $('<td>').text(studentObj.course);
@@ -134,6 +153,39 @@ function View() {
         }, 200);
 
     };
+
+    /**
+     * displayCourseAutoFillList - Displays the given course autofill list. Hides display if given list is empty.
+     * @param {string[]} courseAutoFillList - List of courses to display.
+     */
+    this.displayCourseAutoFillList = function(courseAutoFillList) {
+        $("#autothis").empty();
+
+        if (courseAutoFillList.length != 0) {
+            var ul = $("<ul>", {
+                class: "list-group"
+            });
+
+            for (var i = 0; i < courseAutoFillList.length; i++) {
+                var li = $("<a>", {
+                    text: courseAutoFillList[i],
+                    class: "list-group-item",
+                    href: "#"
+                });
+
+                $(ul).append(li);
+            }
+
+            $(ul).on("mousedown", "a", function () {
+                    console.log("clicked: ", $(this).text());
+                $('#course').val($(this).text());
+                $("#autothis").empty();
+            });
+
+            $("#autothis").append(ul);
+        }
+    };
+
 }
 
 /**
@@ -148,6 +200,8 @@ function Model() {
      */
     this.student_array = [];
 
+    this.courseList = new CourseList();
+
     /**
      * addStudent - creates a student objects based on input fields in the form and adds the object to global student array
      *
@@ -156,11 +210,12 @@ function Model() {
     this.addStudent = function () {
 
         var inputValues = [];
-        for (var i = 0; i < inputIds.length; i++) {
-            inputValues.push($("#" + inputIds[i]).val());
+        for (var i = 0; i < view.inputIds.length; i++) {
+            inputValues.push($("#" + view.inputIds[i]).val());
         }
         var student = new Student(inputValues[0], inputValues[1], inputValues[2]);
         this.student_array.push(student);
+        this.courseList.addCourse(student.course);
         view.addStudentToDom(student);
     };
 
@@ -239,59 +294,112 @@ function Model() {
             $(lowStudents[l].element.addClass('alert-danger'));
         }
     };
-}
 
-/**
- * Student - creates a student Object that holds their name, course, and grade
- * @param {string} name
- * @param {string} course
- * @param {number} grade
- * @constructor
- */
-function Student(name, course, grade) {
-    this.name = name;
-    this.course = course;
-    this.grade = grade;
-    this.element;
 
-    this.delete_self = function (callback) {
-        var index = this.element.index();
-        model.student_array.splice(index, 1);
-        this.element.remove();
-        callback();
-    }
-}
-//EXPERIMENTAL STUFF
-/**
- * keyPressTimer - function that is called on key press up and will show a drop down list
- */
-function keyPressTimer() {
-    input = $('#course').val();
+    /**
+     * Student - creates a student Object that holds their name, course, and grade
+     * @param {string} name
+     * @param {string} course
+     * @param {number} grade
+     * @constructor
+     */
+    function Student(name, course, grade) {
+        this.name = name;
+        this.course = course;
+        this.grade = grade;
+        this.element;
 
-    if (timer != null) {
-        clearTimeout(timer);
-    }
-    if (input.length > 0) {
-        timer = setTimeout('showCourseList()', 500);
-    }
-}
-/**
- * showCourseList
- */
-function showCourseList() {
-    var dropDownArray = [];
-    //for (var i in model.student_array) {
-    //    var course = model.student_array[i].course;
-    //    courseList[course] = 1;
-    //}
-    for (var property in courseList) {
-        if (input.toUpperCase() == (property.substr(0, input.length)).toUpperCase()) {
-            dropDownArray.push(property);
+        this.delete_self = function (callback) {
+            var index = this.element.index();
+            model.courseList.removeCourse(this.course);
+            model.student_array.splice(index, 1);
+            this.element.remove();
+            callback();
         }
     }
-    displayAutoList(dropDownArray);
+
+    /**
+     * CourseList - creates a courseList Object that holds a list of all courses in the student_table, along with their quantities.
+     * @param {string[]} startingCourseList - Optional list to populate courseList with upon construction.
+     * @constructor
+     */
+    function CourseList(startingCourseList) {
+
+        // Begin variable initialization
+        var courseList = {};
+        if (Array.isArray(startingCourseList)) {
+            for (var i = 0; i < startingCourseList.length; i++) {
+                this.addCourse(startingCourseList[i]);
+            }
+        }
+        // End variable initialization
+
+        // Begin public method definitions
+        /**
+         * addCourse - Adds the given course to the course list. If the course is already included, increments the number of uses.
+         * @param {string} course - The course to add to the list.
+         */
+        this.addCourse = function(course) {
+            if (courseList.hasOwnProperty(course)) {
+                courseList[course]++;
+            } else {
+                courseList[course] = 1;
+            }
+        };
+        /**
+         * removeCourse - If possible, decrements the number of uses for the given course in the course list.
+         * @param {string} course - The course to decrement the number of uses for.
+         */
+        this.removeCourse = function(course) {
+            if (courseList.hasOwnProperty(course) && courseList[course] > 0) {
+                courseList[course]--;
+            }
+        };
+        /**
+         * searchForMatchList - Returns a sorted list of courses that are relevant to the search term.
+         * @param {string} searchTerm - Term used to filter courses.
+         * @returns {string[]} - Sorted list of search term matches. Empty list if no alphanumeric characters are used.
+         */
+        this.searchForMatchList = function(searchTerm) {
+            if (!(/[\w\d]/.test(searchTerm))) { // If the search term contains no alphanumeric characters
+                return []; // Return an empty list
+            }
+            var filteredList = filterList(searchTerm); // Filters the list with the search term.
+            return sortList(filteredList); // Sorts the list.
+        };
+        // End public method definitions
+
+        // Begin private method definitions
+        function filterList(filterString) {
+            var filteredList = [];
+            for (var course in courseList) {
+                if (courseList.hasOwnProperty(course) && courseList[course] > 0) {
+                    if (filterString.toLowerCase() == course.substr(0, filterString.length).toLowerCase()) {
+                        filteredList.push([course, courseList[course]]);
+                    }
+                }
+            }
+            return filteredList;
+        }
+        function sortList(unsortedList) {
+            unsortedList.sort(function(a, b){ // Sorts the course list
+                if (a[1] !== b[1]) { // If the course counts are not equal
+                    return b[1] - a[1]; // Sort the higher course counts to earlier in the array
+                } else { // If the course counts are equal
+                    return a[0].toLowerCase() - b[0].toLowerCase(); // Sort alphabetically, ignoring capitalization
+                }
+            });
+            return unsortedList.map(function(value){return value[0]}); // Removes course counts and flattens array.
+        }
+        // End private method definitions
+
+    }
 
 }
+
+
+//EXPERIMENTAL STUFF
+
 //this does not exist
 function callDatabase() {
     $.ajax({
@@ -312,29 +420,4 @@ function callDatabase() {
             $(".avgGrade").text(model.calculateAverage());
         }
     });
-}
-
-function displayAutoList(display) {
-    $("#autothis").empty();
-
-    if (display.length != 0) {
-        var ul = $("<ul>", {
-            class: "autofill"
-        });
-
-        for (var i = 0; i < display.length; i++) {
-            var li = $("<li>", {
-                text: display[i]
-            });
-
-            $(ul).append(li);
-        }
-
-        $(ul).on("click", "li", function () {
-            $('#course').val($(this).text());
-            $("#autothis").empty();
-        });
-
-        $("#autothis").append(ul);
-    }
 }
