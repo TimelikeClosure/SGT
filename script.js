@@ -34,7 +34,6 @@ function Controller() {
      * addClicked - Event Handler when user clicks the add button
      */
     this.addClicked = function () {
-        view.clearFormErrors();
 
         if(model.validateForm()) {
 
@@ -145,18 +144,25 @@ function View() {
      *
      * @return undefined
      * @param
-     * error - the type of error. If undefined, clear the error div and don't display error
+     * error - the type of error.
      * id - the id of the input element in which the error occurred
      */
     this.displayFormError = function(error, id) {
-        //clears the error div
-        //$('.error-container').html('');
 
-        if(error !== undefined) {
+            var inputFieldName;
+            if(id === '#studentName') {
+                inputFieldName = 'Student Name';
+            }
+            else if(id === '#course') {
+                inputFieldName = 'Course';
+            }
+            else if(id === '#studentGrade') {
+                inputFieldName = 'Student Grade';
+            }
             var errorMessage;
             switch(error) {
                 case 'Blank Field':
-                    errorMessage = 'This input field is blank.';
+                    errorMessage = 'Please enter a ' + inputFieldName + '.';
                     break;
                 case 'Grade Invalid':
                     errorMessage = 'Please enter a number between 0 and 100.';
@@ -165,17 +171,10 @@ function View() {
                     errorMessage = 'Error';
                     break;
             }
-            //$(id).attr('title', 'Input Error');
-            $(id).attr('data-content', errorMessage)
+            $(id).attr('data-content', errorMessage);
             $(id).popover('show');
 
-            //var errorDiv = $('<div>', {
-            //    text: errorMessage,
-            //    class: 'alert alert-danger'
-            //});
-            //errorDiv.attr('role', 'alert').css('margin-top', '15px');
-            //$('.error-container').append(errorDiv);
-        }
+
     };
 
     /**
@@ -298,24 +297,38 @@ function Model() {
     };
 
     /**
-     * validateForm - checks if forms are filled out correctly, returns false and shows error if they are not
-     *
+     * validateForm - checks if forms are filled out correctly, returns false and calls displayFormError if they are not
+     * if they are filled out correctly, remove the previous popover
      * @return {boolean}
      */
     this.validateForm = function() {
         var gradeVal = $('#' + inputIds[2]).val();
         var isValid = true;
 
-        //loop through each input form values and check if any are blank
-        for(var i = 0; i < inputIds.length; i++) {
+        //loop through only the first two input form values and check if any are blank
+        for(var i = 0; i < inputIds.length-1; i++) {
             if($('#' + inputIds[i]).val() == '') {
                 view.displayFormError('Blank Field', '#' + inputIds[i]);
                 isValid = false;
             }
+            else {
+                $('#' + inputIds[i]).popover('destroy'); //remove popover if no error
+            }
         }
-        if(isNaN(gradeVal) || gradeVal > 100 || gradeVal < 0) {
-            view.displayFormError('Grade Invalid', '#' + inputIds[2]);
+
+        // validation for grade input is all here to prevent overlapping errors
+        if(isNaN(gradeVal) || gradeVal > 100 || gradeVal < 0 || gradeVal === '') {
+            if(gradeVal === '') {
+                view.displayFormError('Blank Field', '#' + inputIds[2]);
+            }
+            else {
+                view.displayFormError('Grade Invalid', '#' + inputIds[2]);
+            }
+
             isValid = false;
+        }
+        else {
+            $('#' + inputIds[2]).popover('destroy'); //remove popover if no error
         }
         return isValid;
 
