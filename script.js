@@ -316,8 +316,6 @@ function displayAutoList(display) {
     $("#autothis").empty();
 
     if (display.length != 0) {
-        $("#autothis").empty();
-
         var ul = $("<ul>", {
             class: "autofill"
         });
