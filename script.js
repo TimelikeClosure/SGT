@@ -35,6 +35,7 @@ function Controller() {
      */
     this.addClicked = function () {
 
+        //check if form input is valid
         if(model.validateForm()) {
 
             model.addStudent();
@@ -149,7 +150,9 @@ function View() {
      */
     this.displayFormError = function(error, id) {
 
+            // Get input field name based on what id the error applies to
             var inputFieldName;
+
             if(id === '#studentName') {
                 inputFieldName = 'Student Name';
             }
@@ -159,6 +162,8 @@ function View() {
             else if(id === '#studentGrade') {
                 inputFieldName = 'Student Grade';
             }
+
+            // Create an error message depending on what error there was
             var errorMessage;
             switch(error) {
                 case 'Blank Field':
@@ -171,6 +176,8 @@ function View() {
                     errorMessage = 'Error';
                     break;
             }
+
+            // Put error message into popover and display it
             $(id).attr('data-content', errorMessage);
             $(id).popover('show');
 
