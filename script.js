@@ -13,7 +13,7 @@ var input = "";
 /**
  * Listen for the document to load and reset the data to the initial state
  */
-$(document).ready(function(){
+$(document).ready(function () {
     controller.reset();
     $("")
 });
@@ -31,26 +31,26 @@ function Controller() {
     /**
      * addClicked - Event Handler when user clicks the add button
      */
-    this.addClicked = function() {
+    this.addClicked = function () {
         model.addStudent();
         //view.updateData();
-        setTimeout(function(){
+        setTimeout(function () {
             view.updateView();
-        },200)
+        }, 200)
         view.clearAddStudentForm();
     };
 
     /**
      * cancelClicked - Event Handler when user clicks the cancel button, should clear out student form
      */
-    this.cancelClicked = function() {
+    this.cancelClicked = function () {
         view.clearAddStudentForm();
     };
 
     /**
      * reset - resets the application to initial state. Global variables reset, DOM get reset to initial load state
      */
-    this.reset = function() {
+    this.reset = function () {
         model.student_array = [];
         view.clearAddStudentForm();
         view.updateData();
@@ -67,7 +67,7 @@ function View() {
     /**
      * clearAddStudentForm - clears out the form values based on inputIds variable
      */
-    this.clearAddStudentForm = function(){
+    this.clearAddStudentForm = function () {
         for (var i = 0; i < inputIds.length; i++) {
             $("#" + inputIds[i]).val("");
         }
@@ -76,14 +76,14 @@ function View() {
     /**
      * updateData - centralized function to update the average and call student list update
      */
-    this.updateData = function() {
+    this.updateData = function () {
         view.updateView();
 
     };
 
-    this.updateView = function() {
+    this.updateView = function () {
         $(".avgGrade").text(model.calculateAverage());
-        if(model.student_array.length > 0){
+        if (model.student_array.length > 0) {
             model.highlightGrades();
         }
     }
@@ -91,7 +91,7 @@ function View() {
     /**
      * updateStudentList - loops through global student array and appends each objects data into the student-list-container > list-body
      */
-    this.updateStudentList = function() {
+    this.updateStudentList = function () {
         $(".student-list tbody").html("");
         for (var i = 0; i < model.student_array.length; i++) {
             view.addStudentToDom(model.student_array[i]);
@@ -103,7 +103,7 @@ function View() {
      * into the .student_list tbody
      * @param studentObj
      */
-    this.addStudentToDom = function(studentObj) {
+    this.addStudentToDom = function (studentObj) {
         courseList[studentObj.course] = 1;
         var table_row = $('<tr>');
         var student_name = $('<td>').text(studentObj.name);
@@ -127,7 +127,7 @@ function View() {
 
         //success animation for when student's row is added
         table_row.addClass('alert-success');
-        setTimeout(function() {
+        setTimeout(function () {
             table_row.removeClass('alert-success');
         }, 200);
 
@@ -151,11 +151,11 @@ function Model() {
      *
      * @return undefined
      */
-    this.addStudent = function() {
+    this.addStudent = function () {
 
         var inputValues = [];
         for (var i = 0; i < inputIds.length; i++) {
-            inputValues.push($("#"+inputIds[i]).val());
+            inputValues.push($("#" + inputIds[i]).val());
         }
         var student = new Student(inputValues[0], inputValues[1], inputValues[2]);
         this.student_array.push(student);
@@ -166,12 +166,12 @@ function Model() {
      * calculateAverage - loop through the global student array and calculate average grade and return that value
      * @returns {number}
      */
-    this.calculateAverage = function() {
+    this.calculateAverage = function () {
         var total = 0;
         var avg;
 
-        if(this.student_array.length !== 0) {
-            for(var i = 0; i < this.student_array.length; i++) {
+        if (this.student_array.length !== 0) {
+            for (var i = 0; i < this.student_array.length; i++) {
                 total += parseFloat(this.student_array[i].grade);
             }
             avg = total / this.student_array.length;
@@ -188,7 +188,7 @@ function Model() {
         }
     };
     //highlights all lowest and highest grades in the student array
-    this.highlightGrades = function(){
+    this.highlightGrades = function () {
         //initialize the starting grades and students and grade holders;
         var highestGrade = parseFloat(this.student_array[0].grade);
         var lowestGrade = highestGrade;
@@ -197,43 +197,43 @@ function Model() {
         var topStudents = [];
         var lowStudents = [];
         //loop through the student array
-        for(var i = 0; i < this.student_array.length; i++){
+        for (var i = 0; i < this.student_array.length; i++) {
             //remove any previous highlights
             $(this.student_array[i].element).removeClass('alert-danger alert-success');
             var currentGrade = parseFloat(this.student_array[i].grade);
             var currentStudent = this.student_array[i];
             //console.log(currentGrade, typeof  currentGrade, highestGrade, lowestGrade);
             //if grade is higher than highestGrade reset topStudents array and put current student inside
-            if(highestGrade < currentGrade){
+            if (highestGrade < currentGrade) {
                 highestGrade = currentGrade;
                 topStudent = currentStudent;
                 topStudents = [topStudent];
             }
             //if highestGrade is equal to current student grade add them to topStudents
-            else if(highestGrade == currentGrade){
+            else if (highestGrade == currentGrade) {
                 topStudents.push(currentStudent);
             }
             //if grade is lower than lowestGrade reset lowStudents array and put current student inside
-            if(lowestGrade > currentGrade){
+            if (lowestGrade > currentGrade) {
                 lowestGrade = currentGrade;
                 lowStudent = currentStudent;
                 lowStudents = [lowStudent];
             }
             //if lowestGrade is equal to current student grade add them to lowStudents
-            else if(lowestGrade == currentGrade){
+            else if (lowestGrade == currentGrade) {
                 lowStudents.push(currentStudent);
             }
         }
         //check for a grade tie;
-        if(highestGrade == lowestGrade){
+        if (highestGrade == lowestGrade) {
             //console.log("this looks like communism")
             return;
         }
         //loop through each student holder array and apply correct class;
-        for(var t in topStudents){
+        for (var t in topStudents) {
             $(topStudents[t].element.addClass('alert-success'));
         }
-        for(var l in lowStudents){
+        for (var l in lowStudents) {
             $(lowStudents[l].element.addClass('alert-danger'));
         }
     };
@@ -252,7 +252,7 @@ function Student(name, course, grade) {
     this.grade = grade;
     this.element;
 
-    this.delete_self = function(callback) {
+    this.delete_self = function (callback) {
         var index = this.element.index();
         model.student_array.splice(index, 1);
         this.element.remove();
@@ -312,28 +312,29 @@ function callDatabase() {
     });
 }
 
-function displayAutoList(display){
-
+function displayAutoList(display) {
     $("#autothis").empty();
 
-    var ul = $("<ul>",{
-        class: "autofill"
-    });
+    if (display.length != 0) {
+        $("#autothis").empty();
 
-    for(var i = 0; i < display.length; i++){
-        var li = $("<li>",{
-            text: display[i]
+        var ul = $("<ul>", {
+            class: "autofill"
         });
 
-        $(ul).append(li);
+        for (var i = 0; i < display.length; i++) {
+            var li = $("<li>", {
+                text: display[i]
+            });
+
+            $(ul).append(li);
+        }
+
+        $(ul).on("click", "li", function () {
+            $('#course').val($(this).text());
+            $("#autothis").empty();
+        });
+
+        $("#autothis").append(ul);
     }
-
-    $(ul).on("click", "li", function(){
-        $('#course').val($(this).text());
-        $("#autothis").empty();
-    });
-
-    $("#autothis").append(ul);
-
-
 }
