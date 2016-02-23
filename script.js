@@ -69,7 +69,7 @@ function Controller() {
         if (this.inputTimer != null) {
             clearTimeout(this.inputTimer);
         }
-        this.inputTimer = setTimeout(view.displayCourseAutoFillList([]), 100);
+        this.inputTimer = setTimeout(view.displayCourseAutoFillList([]), 500);
     };
 
 }
@@ -163,18 +163,21 @@ function View() {
 
         if (courseAutoFillList.length != 0) {
             var ul = $("<ul>", {
-                class: "autofill"
+                class: "list-group"
             });
 
             for (var i = 0; i < courseAutoFillList.length; i++) {
-                var li = $("<li>", {
-                    text: courseAutoFillList[i]
+                var li = $("<a>", {
+                    text: courseAutoFillList[i],
+                    class: "list-group-item",
+                    href: "#"
                 });
 
                 $(ul).append(li);
             }
 
-            $(ul).on("click", "li", function () {
+            $(ul).on("mousedown", "a", function () {
+                    console.log("clicked: ", $(this).text());
                 $('#course').val($(this).text());
                 $("#autothis").empty();
             });
