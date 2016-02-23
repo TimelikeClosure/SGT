@@ -8,9 +8,6 @@
  */
 $(document).ready(function () {
     controller.reset();
-    $("#course").blur(function(){
-        setTimeout(function(){$("#autothis").empty()}, 100);
-    });
 });
 
 //  Begin global object instantiation
