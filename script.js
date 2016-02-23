@@ -53,16 +53,19 @@ function Controller() {
     };
 
     /**
-     * studentCourseInputKeyPressTimer - function that is called on key press up and will show a drop down list
+     * studentCourseAutoFillShowTimer - starts timer to update and show student course autofill list
      */
-    this.studentCourseInputKeyPressTimer = function() {
+    this.studentCourseAutoFillShowTimer = function() {
         if (this.inputTimer != null) {
             clearTimeout(this.inputTimer);
         }
         this.inputTimer = setTimeout(view.displayCourseAutoFillList(model.courseList.searchForMatchList($('#course').val())), 500);
     };
 
-    this.studentCourseOnBlurTimer = function() {
+    /**
+     * studentCourseAutoFillHideTimer - starts timer to hide student course autofill list
+     */
+    this.studentCourseAutoFillHideTimer = function() {
         if (this.inputTimer != null) {
             clearTimeout(this.inputTimer);
         }
@@ -151,6 +154,10 @@ function View() {
 
     };
 
+    /**
+     * displayCourseAutoFillList -
+     * @param {string[]} display
+     */
     this.displayCourseAutoFillList = function(display) {
         $("#autothis").empty();
 
@@ -284,88 +291,96 @@ function Model() {
             $(lowStudents[l].element.addClass('alert-danger'));
         }
     };
-}
 
-/**
- * Student - creates a student Object that holds their name, course, and grade
- * @param {string} name
- * @param {string} course
- * @param {number} grade
- * @constructor
- */
-function Student(name, course, grade) {
-    this.name = name;
-    this.course = course;
-    this.grade = grade;
-    this.element;
 
-    this.delete_self = function (callback) {
-        var index = this.element.index();
-        model.courseList.removeCourse(this.course);
-        model.student_array.splice(index, 1);
-        this.element.remove();
-        callback();
-    }
-}
+    /**
+     * Student - creates a student Object that holds their name, course, and grade
+     * @param {string} name
+     * @param {string} course
+     * @param {number} grade
+     * @constructor
+     */
+    function Student(name, course, grade) {
+        this.name = name;
+        this.course = course;
+        this.grade = grade;
+        this.element;
 
-function CourseList(startingCourseList) {
-
-    // Begin variable initialization
-    var courseList = {};
-    if (Array.isArray(startingCourseList)) {
-        for (var i = 0; i < startingCourseList.length; i++) {
-            this.addCourse(startingCourseList[i]);
+        this.delete_self = function (callback) {
+            var index = this.element.index();
+            model.courseList.removeCourse(this.course);
+            model.student_array.splice(index, 1);
+            this.element.remove();
+            callback();
         }
     }
-    // End variable initialization
 
-    // Begin public method definitions
-    this.addCourse = function(course) {
-        if (courseList.hasOwnProperty(course)) {
-            courseList[course]++;
-        } else {
-            courseList[course] = 1;
-        }
-    };
-    this.removeCourse = function(course) {
-        if (courseList.hasOwnProperty(course) && courseList[course] > 0) {
-            courseList[course]--;
-        }
-    };
-    this.searchForMatchList = function(searchTerm) {
-        if (searchTerm == "") {
-            return [];
-        }
-        var filteredList = filterList(searchTerm);
-        return sortList(filteredList);
-    };
-    // End public method definitions
+    /**
+     * CourseList - creates a courseList Object that holds a list of all courses in the student_table, along with their quantities.
+     * @param {string[]} startingCourseList - Optional list to populate courseList with upon construction.
+     * @constructor
+     */
+    function CourseList(startingCourseList) {
 
-    // Begin private method definitions
-    function filterList(filterString) {
-        var filteredList = [];
-        for (var course in courseList) {
+        // Begin variable initialization
+        var courseList = {};
+        if (Array.isArray(startingCourseList)) {
+            for (var i = 0; i < startingCourseList.length; i++) {
+                this.addCourse(startingCourseList[i]);
+            }
+        }
+        // End variable initialization
+
+        // Begin public method definitions
+        this.addCourse = function(course) {
+            if (courseList.hasOwnProperty(course)) {
+                courseList[course]++;
+            } else {
+                courseList[course] = 1;
+            }
+        };
+        this.removeCourse = function(course) {
             if (courseList.hasOwnProperty(course) && courseList[course] > 0) {
-                if (filterString.toLowerCase() == course.substr(0, filterString.length).toLowerCase()) {
-                    filteredList.push([course, courseList[course]]);
+                courseList[course]--;
+            }
+        };
+        this.searchForMatchList = function(searchTerm) {
+            if (searchTerm == "") {
+                return [];
+            }
+            var filteredList = filterList(searchTerm);
+            return sortList(filteredList);
+        };
+        // End public method definitions
+
+        // Begin private method definitions
+        function filterList(filterString) {
+            var filteredList = [];
+            for (var course in courseList) {
+                if (courseList.hasOwnProperty(course) && courseList[course] > 0) {
+                    if (filterString.toLowerCase() == course.substr(0, filterString.length).toLowerCase()) {
+                        filteredList.push([course, courseList[course]]);
+                    }
                 }
             }
+            return filteredList;
         }
-        return filteredList;
+        function sortList(unsortedList) {
+            unsortedList.sort(function(a, b){ // Sorts the course list
+                if (a[1] !== b[1]) { // If the course counts are not equal
+                    return b[1] - a[1]; // Sort the higher course counts to earlier in the array
+                } else { // If the course counts are equal
+                    return a[0].toLowerCase() - b[0].toLowerCase(); // Sort alphabetically, ignoring capitalization
+                }
+            });
+            return unsortedList.map(function(value){return value[0]}); // Removes course counts and flattens array.
+        }
+        // End private method definitions
+
     }
-    function sortList(unsortedList) {
-        unsortedList.sort(function(a, b){ // Sorts the course list
-            if (a[1] !== b[1]) { // If the course counts are not equal
-                return b[1] - a[1]; // Sort the higher course counts to earlier in the array
-            } else { // If the course counts are equal
-                return a[0].toLowerCase() - b[0].toLowerCase(); // Sort alphabetically, ignoring capitalization
-            }
-        });
-        return unsortedList.map(function(value){return value[0]}); // Removes course counts and flattens array.
-    }
-    // End private method definitions
 
 }
+
 
 //EXPERIMENTAL STUFF
 
