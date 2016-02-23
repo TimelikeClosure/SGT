@@ -1,27 +1,31 @@
+"use strict";
 /**
  * Define all global variables here
  */
-var timer = null;
-var courseList = {};
-var input = "";
 //var dropDownArray = [];
 /**
  * Listen for the document to load and reset the data to the initial state
  */
 $(document).ready(function () {
     controller.reset();
-    $("")
+    $("#course").blur(function(){
+        setTimeout(function(){$("#autothis").empty()}, 100);
+    });
 });
 
+//  Begin global object instantiation
 var controller = new Controller();
 var view = new View();
 var model = new Model();
+//  End global object instantiation
 
 /**
  * Controller - creates an object that handles all input
  * @constructor
  */
 function Controller() {
+
+    this.inputTimer = null;
 
     /**
      * addClicked - Event Handler when user clicks the add button
@@ -49,6 +53,23 @@ function Controller() {
         model.student_array = [];
         view.clearAddStudentForm();
         view.updateData();
+    };
+
+    /**
+     * studentCourseInputKeyPressTimer - function that is called on key press up and will show a drop down list
+     */
+    this.studentCourseInputKeyPressTimer = function() {
+        if (this.inputTimer != null) {
+            clearTimeout(this.inputTimer);
+        }
+        this.inputTimer = setTimeout(view.displayCourseAutoFillList(model.courseList.searchForMatchList($('#course').val())), 500);
+    };
+
+    this.studentCourseOnBlurTimer = function() {
+        if (this.inputTimer != null) {
+            clearTimeout(this.inputTimer);
+        }
+        this.inputTimer = setTimeout(view.displayCourseAutoFillList([]), 100);
     };
 
 }
@@ -87,7 +108,7 @@ function View() {
         if (model.student_array.length > 0) {
             model.highlightGrades();
         }
-    }
+    };
 
     /**
      * updateStudentList - loops through global student array and appends each objects data into the student-list-container > list-body
@@ -105,7 +126,6 @@ function View() {
      * @param studentObj
      */
     this.addStudentToDom = function (studentObj) {
-        courseList[studentObj.course] = 1;
         var table_row = $('<tr>');
         var student_name = $('<td>').text(studentObj.name);
         var student_course = $('<td>').text(studentObj.course);
@@ -133,6 +153,32 @@ function View() {
         }, 200);
 
     };
+
+    this.displayCourseAutoFillList = function(display) {
+        $("#autothis").empty();
+
+        if (display.length != 0) {
+            var ul = $("<ul>", {
+                class: "autofill"
+            });
+
+            for (var i = 0; i < display.length; i++) {
+                var li = $("<li>", {
+                    text: display[i]
+                });
+
+                $(ul).append(li);
+            }
+
+            $(ul).on("click", "li", function () {
+                $('#course').val($(this).text());
+                $("#autothis").empty();
+            });
+
+            $("#autothis").append(ul);
+        }
+    };
+
 }
 
 /**
@@ -147,6 +193,8 @@ function Model() {
      */
     this.student_array = [];
 
+    this.courseList = new CourseList();
+
     /**
      * addStudent - creates a student objects based on input fields in the form and adds the object to global student array
      *
@@ -160,6 +208,7 @@ function Model() {
         }
         var student = new Student(inputValues[0], inputValues[1], inputValues[2]);
         this.student_array.push(student);
+        this.courseList.addCourse(student.course);
         view.addStudentToDom(student);
     };
 
@@ -255,42 +304,74 @@ function Student(name, course, grade) {
 
     this.delete_self = function (callback) {
         var index = this.element.index();
+        model.courseList.removeCourse(this.course);
         model.student_array.splice(index, 1);
         this.element.remove();
         callback();
     }
 }
-//EXPERIMENTAL STUFF
-/**
- * keyPressTimer - function that is called on key press up and will show a drop down list
- */
-function keyPressTimer() {
-    input = $('#course').val();
 
-    if (timer != null) {
-        clearTimeout(timer);
-    }
-    if (input.length > 0) {
-        timer = setTimeout('showCourseList()', 500);
-    }
-}
-/**
- * showCourseList
- */
-function showCourseList() {
-    var dropDownArray = [];
-    //for (var i in model.student_array) {
-    //    var course = model.student_array[i].course;
-    //    courseList[course] = 1;
-    //}
-    for (var property in courseList) {
-        if (input.toUpperCase() == (property.substr(0, input.length)).toUpperCase()) {
-            dropDownArray.push(property);
+function CourseList(startingCourseList) {
+
+    // Begin variable initialization
+    var courseList = {};
+    if (Array.isArray(startingCourseList)) {
+        for (var i = 0; i < startingCourseList.length; i++) {
+            this.addCourse(startingCourseList[i]);
         }
     }
-    displayAutoList(dropDownArray);
+    // End variable initialization
+
+    // Begin public method definitions
+    this.addCourse = function(course) {
+        if (courseList.hasOwnProperty(course)) {
+            courseList[course]++;
+        } else {
+            courseList[course] = 1;
+        }
+    };
+    this.removeCourse = function(course) {
+        if (courseList.hasOwnProperty(course) && courseList[course] > 0) {
+            courseList[course]--;
+        }
+    };
+    this.searchForMatchList = function(searchTerm) {
+        if (searchTerm == "") {
+            return [];
+        }
+        var filteredList = filterList(searchTerm);
+        return sortList(filteredList);
+    };
+    // End public method definitions
+
+    // Begin private method definitions
+    function filterList(filterString) {
+        var filteredList = [];
+        for (var course in courseList) {
+            if (courseList.hasOwnProperty(course) && courseList[course] > 0) {
+                if (filterString.toLowerCase() == course.substr(0, filterString.length).toLowerCase()) {
+                    filteredList.push([course, courseList[course]]);
+                }
+            }
+        }
+        return filteredList;
+    }
+    function sortList(unsortedList) {
+        unsortedList.sort(function(a, b){ // Sorts the course list
+            if (a[1] !== b[1]) { // If the course counts are not equal
+                return b[1] - a[1]; // Sort the higher course counts to earlier in the array
+            } else { // If the course counts are equal
+                return a[0].toLowerCase() - b[0].toLowerCase(); // Sort alphabetically, ignoring capitalization
+            }
+        });
+        return unsortedList.map(function(value){return value[0]}); // Removes course counts and flattens array.
+    }
+    // End private method definitions
 
 }
+
+//EXPERIMENTAL STUFF
+
 //this does not exist
 function callDatabase() {
     $.ajax({
@@ -311,29 +392,4 @@ function callDatabase() {
             $(".avgGrade").text(model.calculateAverage());
         }
     });
-}
-
-function displayAutoList(display) {
-    $("#autothis").empty();
-
-    if (display.length != 0) {
-        var ul = $("<ul>", {
-            class: "autofill"
-        });
-
-        for (var i = 0; i < display.length; i++) {
-            var li = $("<li>", {
-                text: display[i]
-            });
-
-            $(ul).append(li);
-        }
-
-        $(ul).on("click", "li", function () {
-            $('#course').val($(this).text());
-            $("#autothis").empty();
-        });
-
-        $("#autothis").append(ul);
-    }
 }
