@@ -155,20 +155,20 @@ function View() {
     };
 
     /**
-     * displayCourseAutoFillList -
-     * @param {string[]} display
+     * displayCourseAutoFillList - Displays the given course autofill list. Hides display if given list is empty.
+     * @param {string[]} courseAutoFillList - List of courses to display.
      */
-    this.displayCourseAutoFillList = function(display) {
+    this.displayCourseAutoFillList = function(courseAutoFillList) {
         $("#autothis").empty();
 
-        if (display.length != 0) {
+        if (courseAutoFillList.length != 0) {
             var ul = $("<ul>", {
                 class: "autofill"
             });
 
-            for (var i = 0; i < display.length; i++) {
+            for (var i = 0; i < courseAutoFillList.length; i++) {
                 var li = $("<li>", {
-                    text: display[i]
+                    text: courseAutoFillList[i]
                 });
 
                 $(ul).append(li);
@@ -332,6 +332,10 @@ function Model() {
         // End variable initialization
 
         // Begin public method definitions
+        /**
+         * addCourse - Adds the given course to the course list. If the course is already included, increments the number of uses.
+         * @param {string} course - The course to add to the list.
+         */
         this.addCourse = function(course) {
             if (courseList.hasOwnProperty(course)) {
                 courseList[course]++;
@@ -339,17 +343,26 @@ function Model() {
                 courseList[course] = 1;
             }
         };
+        /**
+         * removeCourse - If possible, decrements the number of uses for the given course in the course list.
+         * @param {string} course - The course to decrement the number of uses for.
+         */
         this.removeCourse = function(course) {
             if (courseList.hasOwnProperty(course) && courseList[course] > 0) {
                 courseList[course]--;
             }
         };
+        /**
+         * searchForMatchList - Returns a sorted list of courses that are relevant to the search term.
+         * @param {string} searchTerm - Term used to filter courses.
+         * @returns {string[]} - Sorted list of search term matches. Empty list if no alphanumeric characters are used.
+         */
         this.searchForMatchList = function(searchTerm) {
-            if (searchTerm == "") {
-                return [];
+            if (!(/[\w\d]/.test(searchTerm))) { // If the search term contains no alphanumeric characters
+                return []; // Return an empty list
             }
-            var filteredList = filterList(searchTerm);
-            return sortList(filteredList);
+            var filteredList = filterList(searchTerm); // Filters the list with the search term.
+            return sortList(filteredList); // Sorts the list.
         };
         // End public method definitions
 
