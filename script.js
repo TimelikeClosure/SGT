@@ -117,8 +117,8 @@ function View() {
             text: 'Delete'
 
         }).click(function () {
-            studentObj.delete_self();
-            view.updateView();
+            studentObj.delete_self(view.updateView);
+            //view.updateView();
         });
 
         operations.append(delete_button);
@@ -252,10 +252,11 @@ function Student(name, course, grade) {
     this.grade = grade;
     this.element;
 
-    this.delete_self = function() {
+    this.delete_self = function(callback) {
         var index = this.element.index();
         model.student_array.splice(index, 1);
         this.element.remove();
+        callback();
     }
 }
 //EXPERIMENTAL STUFF
