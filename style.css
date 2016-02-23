@@ -1,0 +1,17 @@
+tr {
+    transition: .5s linear all;
+}
+.list-group {
+    position: absolute;
+    top: 175%;
+    left: 200%;
+    z-index: 23;
+    cursor: pointer;
+}
+.list-group-item {
+    text-align: left;
+}
+
+.popover-content {
+    font-size: .8em;
+}
