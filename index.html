@@ -26,24 +26,27 @@
             <span class="input-group-addon">
                 <span class="glyphicon glyphicon-user"></span>
             </span>
-            <input type="text" class="form-control" name="studentName" id="studentName" placeholder="Student Name">
+            <input type="text" class="form-control" name="studentName" id="studentName" placeholder="Student Name"
+                   data-toggle="popover" data-trigger="focus" data-placement="left">
         </div>
         <div class="input-group form-group">
             <span  class="input-group-addon">
                 <span id="autothis" class="glyphicon glyphicon-list-alt"></span>
             </span>
             <input type="text" class="form-control" name="course" id="course"
-                   placeholder="Student Course" onkeyup="keyPressTimer()">
+                   placeholder="Student Course" onkeyup="keyPressTimer()" data-toggle="popover" data-trigger="focus"
+                   data-placement="left">
         </div>
         <div class="input-group form-group">
             <span class="input-group-addon">
                 <span class="glyphicon glyphicon-education"></span>
             </span>
             <input type="text" class="form-control" name="studentGrade" id="studentGrade"
-                   placeholder="Student Grade">
+                   placeholder="Student Grade" data-toggle="popover" data-trigger="focus" data-placement="left">
         </div>
         <button type="button" class="btn btn-success" onclick="controller.addClicked();">Add</button>
         <button type="button" class="btn btn-default" onclick="controller.cancelClicked();">Cancel</button>
+        <div class="error-container"></div>
     </div>
     <div class="student-list-container col-md-9 col-md-pull-3 col-sm-9 col-sm-pull-3 col-lg-9 col-lg-pull-3">
         <table class="student-list table">

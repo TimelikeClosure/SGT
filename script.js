@@ -34,18 +34,23 @@ function Controller() {
      * addClicked - Event Handler when user clicks the add button
      */
     this.addClicked = function () {
-        model.addStudent();
-        //view.updateData();
-        setTimeout(function () {
-            view.updateView();
-        }, 200)
-        view.clearAddStudentForm();
+        view.clearFormErrors();
+
+        if(model.validateForm()) {
+
+            model.addStudent();
+            setTimeout(function () {
+                view.updateView();
+            }, 200)
+            view.clearAddStudentForm();
+        }
     };
 
     /**
      * cancelClicked - Event Handler when user clicks the cancel button, should clear out student form
      */
     this.cancelClicked = function () {
+        view.clearFormErrors();
         view.clearAddStudentForm();
     };
 
@@ -134,6 +139,56 @@ function View() {
         }, 200);
 
     };
+
+    /**
+     * displayFormError - shows errors in the student-add-form
+     *
+     * @return undefined
+     * @param
+     * error - the type of error. If undefined, clear the error div and don't display error
+     * id - the id of the input element in which the error occurred
+     */
+    this.displayFormError = function(error, id) {
+        //clears the error div
+        //$('.error-container').html('');
+
+        if(error !== undefined) {
+            var errorMessage;
+            switch(error) {
+                case 'Blank Field':
+                    errorMessage = 'This input field is blank.';
+                    break;
+                case 'Grade Invalid':
+                    errorMessage = 'Please enter a number between 0 and 100.';
+                    break;
+                default:
+                    errorMessage = 'Error';
+                    break;
+            }
+            //$(id).attr('title', 'Input Error');
+            $(id).attr('data-content', errorMessage)
+            $(id).popover('show');
+
+            //var errorDiv = $('<div>', {
+            //    text: errorMessage,
+            //    class: 'alert alert-danger'
+            //});
+            //errorDiv.attr('role', 'alert').css('margin-top', '15px');
+            //$('.error-container').append(errorDiv);
+        }
+    };
+
+    /**
+     * clearFormErrors - clears error popovers in the student-add-form
+     *
+     * @return undefined
+     *
+     */
+    this.clearFormErrors = function() {
+        for (var i = 0; i < inputIds.length; i++) {
+            $("#" + inputIds[i]).popover('destroy');
+        }
+    };
 }
 
 /**
@@ -162,6 +217,8 @@ function Model() {
         var student = new Student(inputValues[0], inputValues[1], inputValues[2]);
         this.student_array.push(student);
         view.addStudentToDom(student);
+
+
     };
 
     /**
@@ -239,6 +296,31 @@ function Model() {
             $(lowStudents[l].element.addClass('alert-danger'));
         }
     };
+
+    /**
+     * validateForm - checks if forms are filled out correctly, returns false and shows error if they are not
+     *
+     * @return {boolean}
+     */
+    this.validateForm = function() {
+        var gradeVal = $('#' + inputIds[2]).val();
+        var isValid = true;
+
+        //loop through each input form values and check if any are blank
+        for(var i = 0; i < inputIds.length; i++) {
+            if($('#' + inputIds[i]).val() == '') {
+                view.displayFormError('Blank Field', '#' + inputIds[i]);
+                isValid = false;
+            }
+        }
+        if(isNaN(gradeVal) || gradeVal > 100 || gradeVal < 0) {
+            view.displayFormError('Grade Invalid', '#' + inputIds[2]);
+            isValid = false;
+        }
+        return isValid;
+
+    };
+
 }
 
 /**

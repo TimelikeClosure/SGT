@@ -26,3 +26,7 @@ tr {
 button {
     cursor: pointer;
 }
+
+.popover-content {
+    font-size: .8em;
+}
