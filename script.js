@@ -28,18 +28,23 @@ function Controller() {
      * addClicked - Event Handler when user clicks the add button
      */
     this.addClicked = function () {
-        model.addStudent();
-        //view.updateData();
-        setTimeout(function () {
-            view.updateView();
-        }, 200);
-        view.clearAddStudentForm();
+
+        //check if form input is valid
+        if(model.validateForm()) {
+
+            model.addStudent();
+            setTimeout(function () {
+                view.updateView();
+            }, 200);
+            view.clearAddStudentForm();
+        }
     };
 
     /**
      * cancelClicked - Event Handler when user clicks the cancel button, should clear out student form
      */
     this.cancelClicked = function () {
+        view.clearFormErrors();
         view.clearAddStudentForm();
     };
 
@@ -99,6 +104,7 @@ function View() {
      * updateData - centralized function to update the average and call student list update
      */
     this.updateData = function () {
+        model.callDatabase();
         view.updateView();
 
     };
@@ -177,7 +183,6 @@ function View() {
             }
 
             $(ul).on("mousedown", "a", function () {
-                    console.log("clicked: ", $(this).text());
                 $('#course').val($(this).text());
                 $("#autothis").empty();
             });
@@ -186,6 +191,58 @@ function View() {
         }
     };
 
+    /**
+     * displayFormError - shows errors in the student-add-form
+     * @param error - the type of error.
+     * @param id - the id of the input element in which the error occurred
+     * @return undefined
+     */
+    this.displayFormError = function(error, id) {
+
+            // Get input field name based on what id the error applies to
+            var inputFieldName;
+
+            if(id === '#studentName') {
+                inputFieldName = 'Student Name';
+            }
+            else if(id === '#course') {
+                inputFieldName = 'Course';
+            }
+            else if(id === '#studentGrade') {
+                inputFieldName = 'Student Grade';
+            }
+
+            // Create an error message depending on what error there was
+            var errorMessage;
+            switch(error) {
+                case 'Blank Field':
+                    errorMessage = 'Please enter a ' + inputFieldName + '.';
+                    break;
+                case 'Grade Invalid':
+                    errorMessage = 'Please enter a number between 0 and 100.';
+                    break;
+                default:
+                    errorMessage = 'Error';
+                    break;
+            }
+
+            // Put error message into popover and display it
+            $(id).attr('data-content', errorMessage);
+            $(id).popover('show');
+
+    };
+
+    /**
+     * clearFormErrors - clears error popovers in the student-add-form
+     *
+     * @return undefined
+     *
+     */
+    this.clearFormErrors = function() {
+        for (var i = 0; i < this.inputIds.length; i++) {
+            $("#" + this.inputIds[i]).popover('destroy');
+        }
+    };
 }
 
 /**
@@ -217,6 +274,8 @@ function Model() {
         this.student_array.push(student);
         this.courseList.addCourse(student.course);
         view.addStudentToDom(student);
+
+
     };
 
     /**
@@ -295,6 +354,63 @@ function Model() {
         }
     };
 
+    /**
+     * validateForm - checks if forms are filled out correctly, returns false and calls displayFormError if they are not
+     * if they are filled out correctly, remove the previous popover
+     * @return {boolean}
+     */
+    this.validateForm = function() {
+        var gradeVal = $('#' + view.inputIds[2]).val();
+        var isValid = true;
+
+        //loop through only the first two input form values and check if any are blank
+        for(var i = 0; i < view.inputIds.length-1; i++) {
+            if($('#' + view.inputIds[i]).val() == '') {
+                view.displayFormError('Blank Field', '#' + view.inputIds[i]);
+                isValid = false;
+            }
+            else {
+                $('#' + view.inputIds[i]).popover('destroy'); //remove popover if no error
+            }
+        }
+
+        // validation for grade input is all here to prevent overlapping errors
+        if(isNaN(gradeVal) || gradeVal > 100 || gradeVal < 0 || gradeVal === '') {
+            if(gradeVal === '') {
+                view.displayFormError('Blank Field', '#' + view.inputIds[2]);
+            }
+            else {
+                view.displayFormError('Grade Invalid', '#' + view.inputIds[2]);
+            }
+
+            isValid = false;
+        }
+        else {
+            $('#' + view.inputIds[2]).popover('destroy'); //remove popover if no error
+        }
+        return isValid;
+
+    };
+
+    this.callDatabase = function() {
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            data: {
+                api_key: "LEARNING"
+            },
+            url: 'http://s-apis.learningfuze.com/sgt/get',
+            success: function (result) {
+                for (var i  in result.data) {
+                    var student = new Student(result.data[i].name, result.data[i].course, result.data[i].grade);
+                    view.addStudentToDom(student);
+                    model.student_array.push(student);
+                }
+
+                $(".avgGrade").text(model.calculateAverage());
+            }
+        });
+    };
 
     /**
      * Student - creates a student Object that holds their name, course, and grade
@@ -401,23 +517,4 @@ function Model() {
 //EXPERIMENTAL STUFF
 
 //this does not exist
-function callDatabase() {
-    $.ajax({
-        type: "POST",
-        dataType: 'json',
-        data: {
-            api_key: "LEARNING"
-        },
-        url: 'http://s-apis.learningfuze.com/sgt/get',
-        success: function (result) {
-            console.log(result);
-            for (var i  in result.data) {
-                var student = new Student(result.data[i].name, result.data[i].course, result.data[i].grade);
-                view.addStudentToDom(student);
-                model.student_array.push(student);
-            }
 
-            $(".avgGrade").text(model.calculateAverage());
-        }
-    });
-}

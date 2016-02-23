@@ -11,3 +11,7 @@ tr {
 .list-group-item {
     text-align: left;
 }
+
+.popover-content {
+    font-size: .8em;
+}
