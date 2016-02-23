@@ -15,7 +15,6 @@ var input = "";
  */
 $(document).ready(function(){
     controller.reset();
-
     $("")
 });
 
@@ -23,14 +22,11 @@ var controller = new Controller();
 var view = new View();
 var model = new Model();
 
-
 /**
  * Controller - creates an object that handles all input
  * @constructor
  */
 function Controller() {
-
-
 
     /**
      * addClicked - Event Handler when user clicks the add button
@@ -108,7 +104,7 @@ function View() {
      * @param studentObj
      */
     this.addStudentToDom = function(studentObj) {
-
+        courseList[studentObj.course] = 1;
         var table_row = $('<tr>');
         var student_name = $('<td>').text(studentObj.name);
         var student_course = $('<td>').text(studentObj.course);
@@ -137,8 +133,6 @@ function View() {
 
     };
 }
-
-
 
 /**
  * Model - creates an object that handles all business logic
@@ -283,10 +277,10 @@ function keyPressTimer() {
  */
 function showCourseList() {
     var dropDownArray = [];
-    for (var i in model.student_array) {
-        var course = model.student_array[i].course;
-        courseList[course] = 1;
-    }
+    //for (var i in model.student_array) {
+    //    var course = model.student_array[i].course;
+    //    courseList[course] = 1;
+    //}
     for (var property in courseList) {
         if (input.toUpperCase() == (property.substr(0, input.length)).toUpperCase()) {
             dropDownArray.push(property);
@@ -301,20 +295,21 @@ function callDatabase() {
         type: "POST",
         dataType: 'json',
         data: {
-            api_key: apiKey
+            api_key: "LEARNING"
         },
         url: 'http://s-apis.learningfuze.com/sgt/get',
         success: function (result) {
+            console.log(result);
             for (var i  in result.data) {
-                addStudentToDom(result.data[i]);
-                students.push(result.data[i]);
+                var student = new Student(result.data[i].name, result.data[i].course, result.data[i].grade);
+                view.addStudentToDom(student);
+                model.student_array.push(student);
             }
-            ;
-            $(".avgGrade").text(calculateAverage());
+
+            $(".avgGrade").text(model.calculateAverage());
         }
     });
 }
-var dum = ["yo","bro","app","cool"];
 
 function displayAutoList(display){
 
@@ -328,7 +323,16 @@ function displayAutoList(display){
         var li = $("<li>",{
             text: display[i]
         });
+
         $(ul).append(li);
     }
+
+    $(ul).on("click", "li", function(){
+        $('#course').val($(this).text());
+        $("#autothis").empty();
+    });
+
     $("#autothis").append(ul);
+
+
 }

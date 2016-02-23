@@ -3,9 +3,14 @@ tr {
 }
 .autofill{
     position: absolute;
-    top: 100%;
+    top: 175%;
+    left: 200%;
     z-index: 23;
     font-size: 50px;
     background-color: green;
     color: yellow;
+}
+
+.autofill li:hover{
+    color: red;
 }
