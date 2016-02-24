@@ -15,3 +15,6 @@ tr {
 .popover-content {
     font-size: .8em;
 }
+.btn {
+    margin-bottom: 15px;
+}

@@ -49,6 +49,17 @@ function Controller() {
     };
 
     /**
+     * getDataClicked - Event Handler when user clicks the Get Student Data button, loads student data from server
+     */
+    this.getDataClicked = function () {
+        model.callDatabase();
+        setTimeout(function() {
+            view.updateView();
+        }, 500);
+
+    };
+
+    /**
      * reset - resets the application to initial state. Global variables reset, DOM get reset to initial load state
      */
     this.reset = function () {
@@ -104,7 +115,6 @@ function View() {
      * updateData - centralized function to update the average and call student list update
      */
     this.updateData = function () {
-        model.callDatabase();
         view.updateView();
 
     };
@@ -405,6 +415,7 @@ function Model() {
                     var student = new Student(result.data[i].name, result.data[i].course, result.data[i].grade);
                     view.addStudentToDom(student);
                     model.student_array.push(student);
+                    model.courseList.addCourse(student.course);
                 }
 
                 $(".avgGrade").text(model.calculateAverage());
