@@ -37,14 +37,12 @@ function Controller() {
                 inputValues.push($("#" + view.inputIds[i]).val());
             }
             model.addStudent(inputValues[0], inputValues[1], inputValues[2]);
+            database.sendToServer(model.student_array[model.student_array.length - 1]);
             setTimeout(function () {
                 view.updateView();
             }, 200);
             view.clearAddStudentForm();
         }
-
-        //send student data to server
-        database.sendToServer(inputValues[0], inputValues[1], inputValues[2])
     };
 
     /**
@@ -529,20 +527,21 @@ function DatabaseInterface() {
         });
     };
 
-    this.sendToServer = function(name, course, grade) {
+    this.sendToServer = function(studentObj) {
+        var studentID;
         $.ajax({
             type: "POST",
             dataType: 'json',
             data: {
                 api_key: "ihCyt8Un6o",
-                name: name,
-                course: course,
-                grade: grade
+                name: studentObj.name,
+                course: studentObj.course,
+                grade: studentObj.grade
             },
             url: 'http://s-apis.learningfuze.com/sgt/create',
             success: function (result) {
-                console.log(result);
-                $(".avgGrade").text(model.calculateAverage());
+                studentObj.id = result.new_id;
+                console.log(studentObj);
             },
             error: function (result) {
                 console.log(result);
