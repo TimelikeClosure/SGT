@@ -169,9 +169,9 @@ function View() {
         $('.student-list tbody').append(table_row);
 
         //success animation for when student's row is added
-        table_row.addClass('alert-primary');
+        table_row.addClass('alert-info');
         setTimeout(function () {
-            table_row.removeClass('alert-primary');
+            table_row.removeClass('alert-info');
         }, 200);
 
     };
