@@ -411,6 +411,7 @@ function Model() {
             },
             url: 'http://s-apis.learningfuze.com/sgt/get',
             success: function (result) {
+                console.log(result);
                 for (var i  in result.data) {
                     var student = new Student(result.data[i].name, result.data[i].course, result.data[i].grade);
                     model.student_array.push(student);
@@ -419,6 +420,27 @@ function Model() {
                 }
 
                 $(".avgGrade").text(model.calculateAverage());
+            }
+        });
+    };
+
+    this.databaseAdd = function() {
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            data: {
+                api_key: "ihCyt8Un6o",
+                name: 'Timmy',
+                course: 'Memeology',
+                grade: 21
+            },
+            url: 'http://s-apis.learningfuze.com/sgt/create',
+            success: function (result) {
+                console.log(result);
+                $(".avgGrade").text(model.calculateAverage());
+            },
+            error: function (result) {
+                console.log(result);
             }
         });
     };
