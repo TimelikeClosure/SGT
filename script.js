@@ -32,6 +32,7 @@ function Controller() {
 
         //check if form input is valid
         if(model.validateForm()) {
+            view.buttonSpinner($('#add'));
             var inputValues = [];
             for (var i = 0; i < view.inputIds.length; i++) {
                 inputValues.push($("#" + view.inputIds[i]).val());
@@ -49,6 +50,7 @@ function Controller() {
      * cancelClicked - Event Handler when user clicks the cancel button, should clear out student form
      */
     this.cancelClicked = function () {
+        view.buttonSpinner($('#cancel'));
         view.clearFormErrors();
         view.clearAddStudentForm();
     };
@@ -57,6 +59,7 @@ function Controller() {
      * getDataClicked - Event Handler when user clicks the Get Student Data button, loads student data from server
      */
     this.getDataClicked = function () {
+        view.buttonSpinner($('#studentData'));
         database.readStudentData();
         setTimeout(function() {
             view.updateView();
@@ -267,7 +270,7 @@ function View() {
         var span = $('<span>', {
             class: "glyphicon glyphicon-refresh spinning"
         });
-        area.append(span);
+        area.prepend(span);
     }
 }
 

@@ -23,8 +23,8 @@ tr {
 }
 
 .glyphicon.spinning {
-    animation: spin 1s infinite linear;
     margin-right: 5px;
+    animation: spin 1s infinite linear;
     -webkit-animation: spin2 1s infinite linear;
 }
 
