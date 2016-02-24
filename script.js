@@ -14,6 +14,7 @@ $(document).ready(function () {
 var controller = new Controller();
 var view = new View();
 var model = new Model();
+var database = new DatabaseInterface();
 //  End global object instantiation
 
 /**
@@ -31,13 +32,19 @@ function Controller() {
 
         //check if form input is valid
         if(model.validateForm()) {
-
-            model.addStudent();
+            var inputValues = [];
+            for (var i = 0; i < view.inputIds.length; i++) {
+                inputValues.push($("#" + view.inputIds[i]).val());
+            }
+            model.addStudent(inputValues[0], inputValues[1], inputValues[2]);
             setTimeout(function () {
                 view.updateView();
             }, 200);
             view.clearAddStudentForm();
         }
+
+        //send student data to server
+        database.sendToServer(inputValues[0], inputValues[1], inputValues[2])
     };
 
     /**
@@ -52,7 +59,7 @@ function Controller() {
      * getDataClicked - Event Handler when user clicks the Get Student Data button, loads student data from server
      */
     this.getDataClicked = function () {
-        model.callDatabase();
+        database.getStudentData();
         setTimeout(function() {
             view.updateView();
         }, 500);
@@ -274,13 +281,9 @@ function Model() {
      *
      * @return undefined
      */
-    this.addStudent = function () {
+    this.addStudent = function (name, course, grade, id) {
 
-        var inputValues = [];
-        for (var i = 0; i < view.inputIds.length; i++) {
-            inputValues.push($("#" + view.inputIds[i]).val());
-        }
-        var student = new Student(inputValues[0], inputValues[1], inputValues[2]);
+        var student = new Student(name, course, grade, id);
         this.student_array.push(student);
         this.courseList.addCourse(student.course);
         view.addStudentToDom(student);
@@ -402,60 +405,19 @@ function Model() {
 
     };
 
-    this.callDatabase = function() {
-        $.ajax({
-            type: "POST",
-            dataType: 'json',
-            data: {
-                api_key: "ihCyt8Un6o"
-            },
-            url: 'http://s-apis.learningfuze.com/sgt/get',
-            success: function (result) {
-                console.log(result);
-                for (var i  in result.data) {
-                    var student = new Student(result.data[i].name, result.data[i].course, result.data[i].grade);
-                    model.student_array.push(student);
-                    model.courseList.addCourse(student.course);
-                    view.addStudentToDom(student);
-                }
-
-                $(".avgGrade").text(model.calculateAverage());
-            }
-        });
-    };
-
-    this.databaseAdd = function() {
-        $.ajax({
-            type: "POST",
-            dataType: 'json',
-            data: {
-                api_key: "ihCyt8Un6o",
-                name: 'Timmy',
-                course: 'Memeology',
-                grade: 21
-            },
-            url: 'http://s-apis.learningfuze.com/sgt/create',
-            success: function (result) {
-                console.log(result);
-                $(".avgGrade").text(model.calculateAverage());
-            },
-            error: function (result) {
-                console.log(result);
-            }
-        });
-    };
-
     /**
      * Student - creates a student Object that holds their name, course, and grade
      * @param {string} name
      * @param {string} course
      * @param {number} grade
+     * @param {number} id
      * @constructor
      */
-    function Student(name, course, grade) {
+    function Student(name, course, grade, id) {
         this.name = name;
         this.course = course;
         this.grade = grade;
+        this.id = id;
         this.element;
 
         this.delete_self = function (callback) {
@@ -546,8 +508,46 @@ function Model() {
 
 }
 
+function DatabaseInterface() {
 
-//EXPERIMENTAL STUFF
+    this.getStudentData = function() {
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            data: {
+                api_key: "ihCyt8Un6o"
+            },
+            url: 'http://s-apis.learningfuze.com/sgt/get',
+            success: function (result) {
+                console.log(result);
+                for (var i  in result.data) {
+                    model.addStudent(result.data[i].name, result.data[i].course, result.data[i].grade, result.data[i].id);
+                }
 
-//this does not exist
+                $(".avgGrade").text(model.calculateAverage());
+            }
+        });
+    };
 
+    this.sendToServer = function(name, course, grade) {
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            data: {
+                api_key: "ihCyt8Un6o",
+                name: name,
+                course: course,
+                grade: grade
+            },
+            url: 'http://s-apis.learningfuze.com/sgt/create',
+            success: function (result) {
+                console.log(result);
+                $(".avgGrade").text(model.calculateAverage());
+            },
+            error: function (result) {
+                console.log(result);
+            }
+        });
+    };
+
+}
