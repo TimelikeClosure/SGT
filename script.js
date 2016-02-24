@@ -56,7 +56,7 @@ function Controller() {
      * getDataClicked - Event Handler when user clicks the Get Student Data button, loads student data from server
      */
     this.getDataClicked = function () {
-        database.getStudentData();
+        database.readStudentData();
         setTimeout(function() {
             view.updateView();
         }, 500);
@@ -158,7 +158,7 @@ function View() {
             text: 'Delete'
 
         }).click(function () {
-            studentObj.delete_self(view.updateView);
+            model.removeStudent(studentObj);
             //view.updateView();
         });
 
@@ -257,6 +257,10 @@ function View() {
             $("#" + this.inputIds[i]).popover('destroy');
         }
     };
+
+    this.displayDeleteError = function(errorMessage) {
+        console.log("This should display to the window:", errorMessage);
+    }
 }
 
 /**
@@ -279,13 +283,14 @@ function Model() {
      * @return undefined
      */
     this.addStudent = function (name, course, grade, id) {
-
         var student = new Student(name, course, grade, id);
         this.student_array.push(student);
         this.courseList.addCourse(student.course);
         view.addStudentToDom(student);
+    };
 
-
+    this.removeStudent = function(student) {
+        database.deleteStudentData(student, view.updateView, view.displayDeleteError);
     };
 
     /**
@@ -507,7 +512,7 @@ function Model() {
 
 function DatabaseInterface() {
 
-    this.getStudentData = function() {
+    this.readStudentData = function() {
         $.ajax({
             type: "POST",
             dataType: 'json',
@@ -526,4 +531,28 @@ function DatabaseInterface() {
         });
     };
 
+
+    this.deleteStudentData = function(student, successCallback, failCallback) {
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            data: {
+                api_key: "ihCyt8Un6o",
+                student_id: student.id/*,
+                "force-failure": "request"*/
+            },
+            url: 'http://s-apis.learningfuze.com/sgt/delete',
+            success: function(response) {
+                if (response.success) {
+                    student.delete_self(successCallback);
+                } else {
+                    failCallback(response);
+                }
+            },
+            error: function (response) {
+                failCallback(response);
+            },
+            timeout: 10000
+        });
+    };
 }
