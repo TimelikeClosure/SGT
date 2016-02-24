@@ -36,8 +36,8 @@ function Controller() {
             for (var i = 0; i < view.inputIds.length; i++) {
                 inputValues.push($("#" + view.inputIds[i]).val());
             }
-            model.addStudent(inputValues[0], inputValues[1], inputValues[2]);
-            database.sendToServer(model.student_array[model.student_array.length - 1]);
+            var studentObj = model.addStudent(inputValues[0], inputValues[1], inputValues[2]);
+            database.sendToServer(studentObj);
             setTimeout(function () {
                 view.updateView();
             }, 200);
@@ -285,8 +285,7 @@ function Model() {
         this.student_array.push(student);
         this.courseList.addCourse(student.course);
         view.addStudentToDom(student);
-
-
+        return student;
     };
 
     /**
