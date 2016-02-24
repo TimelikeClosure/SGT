@@ -407,15 +407,15 @@ function Model() {
             type: "POST",
             dataType: 'json',
             data: {
-                api_key: "LEARNING"
+                api_key: "ihCyt8Un6o"
             },
             url: 'http://s-apis.learningfuze.com/sgt/get',
             success: function (result) {
                 for (var i  in result.data) {
                     var student = new Student(result.data[i].name, result.data[i].course, result.data[i].grade);
-                    view.addStudentToDom(student);
                     model.student_array.push(student);
                     model.courseList.addCourse(student.course);
+                    view.addStudentToDom(student);
                 }
 
                 $(".avgGrade").text(model.calculateAverage());
