@@ -271,6 +271,12 @@ function View() {
             class: "glyphicon glyphicon-refresh spinning"
         });
         area.prepend(span);
+        area.attr('disabled', 'disabled');
+    }
+
+    this.stopSpinner = function(area) {
+        $('span').detach();
+        area.attr('dsiabled', 'enabled');
     }
 }
 
