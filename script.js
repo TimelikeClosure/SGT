@@ -261,6 +261,13 @@ function View() {
 
     this.displayDeleteError = function(errorMessage) {
         console.log("This should display to the window:", errorMessage);
+    };
+
+    this.buttonSpinner = function(area) {
+        var span = $('<span>', {
+            class: "glyphicon glyphicon-refresh spinning"
+        });
+        area.append(span);
     }
 }
 
