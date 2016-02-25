@@ -42,9 +42,7 @@ function Controller() {
             setTimeout(function () {
                 view.updateView();
             }, 200);
-            view.clearAddStudentForm();
-            view.stopSpinner($('#add'));
-        }
+            view.clearAddStudentForm();}
     };
 
     /**
@@ -566,9 +564,11 @@ function DatabaseInterface() {
             url: 'http://s-apis.learningfuze.com/sgt/create',
             success: function (result) {
                 studentObj.id = result.new_id;
+                view.stopSpinner($('#add'));
                 console.log(studentObj);
             },
             error: function (result) {
+                view.stopSpinner($('#add'));
                 console.log(result);
             }
         });
