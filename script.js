@@ -294,7 +294,7 @@ function View() {
     };
 
     /**
-     * filterRows - shows or hides the given list of students, based on whether the students think they match
+     * filterRows - shows or hides the given list of students, based on whether the students match the search bar filter
      * @param {Object[]} toggledMatchStudents - list of students to hide or show
      */
     this.filterRows = function(toggledMatchStudents) {
@@ -454,7 +454,7 @@ function Model() {
     };
 
     /**
-     * filterStudentTable -
+     * filterStudentTable - checks every student for filter match. Sends a list of students with changes to view.filterRows().
      */
     this.filterStudentTable = function() {
         var filterString = controller.getFilterString();
@@ -467,6 +467,40 @@ function Model() {
         }
         return view.filterRows(changeList);
     };
+
+    /**
+     * checkMatch - Returns whether the given string matches the given search string according to the specified match method
+     * @param {string} searchString - string to use as condition for match
+     * @param {string} mainString - string to check for match
+     * @param {string} matchMethod - specifies method of match. All methods are case insensitive:
+     *     "keywords" - checks that all words/numbers, delimited by spaces, are in the main string
+     *     "contains" - checks that the full search string is inside the main string at any position
+     *     "begins with" - checks that the main string starts with the full string
+     * @returns {boolean} - true if the match method conditions are satisfied, false otherwise or if match method is invalid. Empty search string always returns true.
+     */
+    function checkMatch (searchString, mainString, matchMethod) {
+        if (searchString.length == 0) {
+            return true;
+        }
+        searchString = searchString.toLowerCase();
+        mainString = mainString.toLowerCase();
+        switch (matchMethod) {
+            case "begins with":
+                return mainString.indexOf(searchString) == 0;
+            case "contains":
+                return mainString.indexOf(searchString) > -1;
+            case "keywords":
+                var keywordList = searchString.split(" ");
+                for (var i = 0; i < keywordList.length; i++) {
+                    if (mainString.indexOf(keywordList[i]) == -1) {
+                        return false;
+                    }
+                }
+                return true;
+            default:
+                return false;
+        }
+    }
 
     /**
      * Student - creates a student Object that holds their name, course, and grade
@@ -488,10 +522,10 @@ function Model() {
             if (filterString === undefined) {
                 filterString = controller.getFilterString();
             }
-            this.matchesFilter = /*(this.id !== undefined && checkMatch(filterString, this.id.toString())) ||
-                */checkMatch(filterString, this.name) ||
-                checkMatch(filterString, this.course) ||
-                checkMatch(filterString, this.grade.toString());
+            this.matchesFilter = /*(this.id !== undefined && checkMatch(filterString, this.id.toString(), "keywords")) ||
+                */checkMatch(filterString, this.name, "keywords") ||
+                checkMatch(filterString, this.course, "keywords") ||
+                checkMatch(filterString, this.grade.toString(), "keywords");
             if (oldMatchesFilter == this.matchesFilter) {
                 return null;
             } else {
@@ -519,25 +553,6 @@ function Model() {
         //  End variable initialization
 
         //  Begin private methods
-        /**
-         * checkMatch - checks to see if all keywords are included in given string
-         * @param {string} keywords - keyword(s) to check main string against
-         * @param {string} mainString - main string to check for keywords
-         * @returns {boolean} - true if all keywords are in main string, false otherwise
-         */
-        function checkMatch (keywords, mainString) {
-            if (keywords.length == 0) {
-                return true;
-            }
-            var keyWordList = keywords.toLowerCase().split(" ");
-            mainString = mainString.toLowerCase();
-            for (var i = 0; i < keyWordList.length; i++) {
-                if (mainString.indexOf(keyWordList[i]) == -1) {
-                    return false;
-                }
-            }
-            return true;
-        }
         //  End private methods
     }
 
@@ -597,7 +612,7 @@ function Model() {
             var filteredList = [];
             for (var course in courseList) {
                 if (courseList.hasOwnProperty(course) && courseList[course] > 0) {
-                    if (filterString.toLowerCase() == course.substr(0, filterString.length).toLowerCase()) {
+                    if (checkMatch(filterString, course, "contains")) {
                         filteredList.push([course, courseList[course]]);
                     }
                 }
