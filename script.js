@@ -522,7 +522,7 @@ function Model() {
             if (filterString === undefined) {
                 filterString = controller.getFilterString();
             }
-            this.matchesFilter = checkMatch(filterString, this.name + " " + this.course + " " + this.grade.toString(), "keywords");
+            this.matchesFilter = checkMatch(filterString, this.name + " " + this.course + " " + this.grade, "keywords");
             if (oldMatchesFilter == this.matchesFilter) {
                 return null;
             } else {
