@@ -90,6 +90,9 @@ function Controller() {
         this.autofillTimer = setTimeout(view.displayCourseAutoFillList([]), 500);
     };
 
+    /**
+     * filterStudentTableTimer - starts timer to filter rows by value of search bar
+     */
     this.filterStudentTableTimer = function() {
         if (this.filterTimer !== null) {
             clearTimeout(this.filterTimer);
@@ -97,6 +100,10 @@ function Controller() {
         this.filterTimer = setTimeout(model.filterStudentTable(), 500);
     };
 
+    /**
+     * getFilterString - Returns value of the search bar
+     * @returns {string} - filter string
+     */
     this.getFilterString = function() {
         return $("#tableFilter").val();
     };
@@ -286,6 +293,10 @@ function View() {
         area.removeAttr('disabled');
     };
 
+    /**
+     * filterRows - shows or hides the given list of students, based on whether the students think they match
+     * @param {Object[]} toggledMatchStudents - list of students to hide or show
+     */
     this.filterRows = function(toggledMatchStudents) {
         for (var i = 0; i < toggledMatchStudents.length; i++) {
             if (toggledMatchStudents[i].matchesFilter) {
@@ -442,6 +453,9 @@ function Model() {
 
     };
 
+    /**
+     * filterStudentTable -
+     */
     this.filterStudentTable = function() {
         var filterString = controller.getFilterString();
         var changeList = [];
@@ -459,11 +473,16 @@ function Model() {
      * @param {string} name
      * @param {string} course
      * @param {number} grade
-     * @param {number} id
+     * @param {number} [id]
      * @constructor
      */
     function Student(name, course, grade, id) {
         //  Begin public methods
+        /**
+         * filterSelf - checks whether Student is included in the given filter and returns self if value has changed
+         * @param {string} [filterString] - filter string.  Gets filter from controller if not specified.
+         * @returns {Object|null} - returns self if filtered status has changed, null otherwise.
+         */
         this.filterSelf = function(filterString) {
             var oldMatchesFilter = this.matchesFilter;
             if (filterString === undefined) {
@@ -494,20 +513,26 @@ function Model() {
         this.course = course;
         this.grade = grade;
         this.id = id;
-        this.matchesFilter = false;
-        this.filterSelf();
+        this.matchesFilter = false; // Current filter status
+        this.filterSelf(); // Filters self on construction
         this.element;
         //  End variable initialization
 
         //  Begin private methods
-        function checkMatch (subString, mainString) {
-            if (subString.length == 0) {
+        /**
+         * checkMatch - checks to see if all keywords are included in given string
+         * @param {string} keywords - keyword(s) to check main string against
+         * @param {string} mainString - main string to check for keywords
+         * @returns {boolean} - true if all keywords are in main string, false otherwise
+         */
+        function checkMatch (keywords, mainString) {
+            if (keywords.length == 0) {
                 return true;
             }
-            var subStringWordList = subString.toLowerCase().split(" ");
+            var keyWordList = keywords.toLowerCase().split(" ");
             mainString = mainString.toLowerCase();
-            for (var i = 0; i < subStringWordList.length; i++) {
-                if (mainString.indexOf(subStringWordList[i]) == -1) {
+            for (var i = 0; i < keyWordList.length; i++) {
+                if (mainString.indexOf(keyWordList[i]) == -1) {
                     return false;
                 }
             }
