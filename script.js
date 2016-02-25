@@ -522,10 +522,7 @@ function Model() {
             if (filterString === undefined) {
                 filterString = controller.getFilterString();
             }
-            this.matchesFilter = /*(this.id !== undefined && checkMatch(filterString, this.id.toString(), "keywords")) ||
-                */checkMatch(filterString, this.name, "keywords") ||
-                checkMatch(filterString, this.course, "keywords") ||
-                checkMatch(filterString, this.grade.toString(), "keywords");
+            this.matchesFilter = checkMatch(filterString, this.name + " " + this.course + " " + this.grade.toString(), "keywords");
             if (oldMatchesFilter == this.matchesFilter) {
                 return null;
             } else {
