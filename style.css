@@ -24,8 +24,8 @@ tr {
 
 .glyphicon.spinning {
     margin-right: 5px;
-    animation: spin 1s infinite linear;
     -webkit-animation: spin2 1s infinite linear;
+    animation: spin 1s infinite linear;
 }
 
 @-webkit-keyframes spin2 {

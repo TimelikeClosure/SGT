@@ -42,7 +42,8 @@ function Controller() {
             setTimeout(function () {
                 view.updateView();
             }, 200);
-            view.clearAddStudentForm();}
+            view.clearAddStudentForm();
+        }
     };
 
     /**
