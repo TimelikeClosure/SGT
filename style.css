@@ -1,6 +1,7 @@
 tr {
     transition: .5s linear all;
 }
+
 .list-group {
     position: absolute;
     top: 175%;
@@ -8,6 +9,7 @@ tr {
     z-index: 23;
     cursor: pointer;
 }
+
 .list-group-item {
     text-align: left;
 }
@@ -15,6 +17,23 @@ tr {
 .popover-content {
     font-size: .8em;
 }
+
 .btn {
     margin-bottom: 15px;
+}
+
+.glyphicon.spinning {
+    margin-right: 5px;
+    -webkit-animation: spin2 1s infinite linear;
+    animation: spin 1s infinite linear;
+}
+
+@-webkit-keyframes spin2 {
+    from { -webkit-transform: rotate(0deg); }
+    to { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+    from { transform: scale(1) rotate(0deg); }
+    to { transform: scale(1) rotate(360deg); }
 }
