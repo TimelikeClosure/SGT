@@ -39,10 +39,6 @@ function Controller() {
             }
             var studentObj = model.addStudent(inputValues[0], inputValues[1], inputValues[2]);
             database.sendToServer(studentObj);
-            setTimeout(function () {
-                view.updateView();
-            }, 200);
-            view.clearAddStudentForm();
         }
     };
 
@@ -62,10 +58,6 @@ function Controller() {
     this.getDataClicked = function () {
         view.buttonSpinner($('#getStudentData'));
         database.readStudentData();
-        setTimeout(function() {
-            view.updateView();
-        }, 500);
-
     };
 
     /**
@@ -547,6 +539,10 @@ function DatabaseInterface() {
                 }
                 view.updateView();
                 view.stopSpinner($('#getStudentData'));
+            },
+            error: function(response) {
+                console.log(response);
+                view.stopSpinner($('#getStudentData'));
             }
         });
     };
@@ -565,6 +561,8 @@ function DatabaseInterface() {
             url: 'http://s-apis.learningfuze.com/sgt/create',
             success: function (result) {
                 studentObj.id = result.new_id;
+                view.clearAddStudentForm();
+                view.updateView();
                 view.stopSpinner($('#add'));
                 console.log(studentObj);
             },
