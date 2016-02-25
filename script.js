@@ -69,6 +69,7 @@ function Controller() {
      */
     this.reset = function () {
         model.student_array = [];
+        database.readStudentData();
         view.clearAddStudentForm();
         view.updateData();
     };
@@ -168,9 +169,9 @@ function View() {
         $('.student-list tbody').append(table_row);
 
         //success animation for when student's row is added
-        table_row.addClass('alert-success');
+        table_row.addClass('alert-info');
         setTimeout(function () {
-            table_row.removeClass('alert-success');
+            table_row.removeClass('alert-info');
         }, 200);
 
     };
@@ -363,7 +364,7 @@ function Model() {
             return;
         }
         //loop through each student holder array and apply correct class;
-        for (var t in topStudents) {
+        for (var t = 0; t < topStudents.length; t++) {
             $(topStudents[t].element.addClass('alert-success'));
         }
         for (var l in lowStudents) {
@@ -527,8 +528,7 @@ function DatabaseInterface() {
                 for (var i  in result.data) {
                     model.addStudent(result.data[i].name, result.data[i].course, result.data[i].grade, result.data[i].id);
                 }
-
-                $(".avgGrade").text(model.calculateAverage());
+                view.updateView();
             }
         });
     };
