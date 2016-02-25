@@ -23,7 +23,9 @@ var database = new DatabaseInterface();
  */
 function Controller() {
 
-    this.inputTimer = null;
+    this.autofillTimer = null;
+
+    this.filterTimer = null;
 
     /**
      * addClicked - Event Handler when user clicks the add button
@@ -72,22 +74,32 @@ function Controller() {
      * studentCourseAutoFillShowTimer - starts timer to update and show student course autofill list
      */
     this.studentCourseAutoFillShowTimer = function() {
-        if (this.inputTimer != null) {
-            clearTimeout(this.inputTimer);
+        if (this.autofillTimer != null) {
+            clearTimeout(this.autofillTimer);
         }
-        this.inputTimer = setTimeout(view.displayCourseAutoFillList(model.courseList.searchForMatchList($('#course').val())), 500);
+        this.autofillTimer = setTimeout(view.displayCourseAutoFillList(model.courseList.searchForMatchList($('#course').val())), 500);
     };
 
     /**
      * studentCourseAutoFillHideTimer - starts timer to hide student course autofill list
      */
     this.studentCourseAutoFillHideTimer = function() {
-        if (this.inputTimer != null) {
-            clearTimeout(this.inputTimer);
+        if (this.autofillTimer != null) {
+            clearTimeout(this.autofillTimer);
         }
-        this.inputTimer = setTimeout(view.displayCourseAutoFillList([]), 500);
+        this.autofillTimer = setTimeout(view.displayCourseAutoFillList([]), 500);
     };
 
+    this.filterStudentTableTimer = function() {
+        if (this.filterTimer !== null) {
+            clearTimeout(this.filterTimer);
+        }
+        this.filterTimer = setTimeout(model.filterStudentTable(), 500);
+    };
+
+    this.getFilterString = function() {
+        return $("#tableFilter").val();
+    };
 }
 
 /**
@@ -143,6 +155,9 @@ function View() {
      */
     this.addStudentToDom = function (studentObj) {
         var table_row = $('<tr>');
+        if (!studentObj.matchesFilter) {
+            table_row.hide();
+        }
         var student_name = $('<td>').text(studentObj.name);
         var student_course = $('<td>').text(studentObj.course);
         var student_grade = $('<td>').text(studentObj.grade);
@@ -269,7 +284,17 @@ function View() {
     this.stopSpinner = function(area) {
         area.children('span').detach();
         area.removeAttr('disabled');
-    }
+    };
+
+    this.filterRows = function(toggledMatchStudents) {
+        for (var i = 0; i < toggledMatchStudents.length; i++) {
+            if (toggledMatchStudents[i].matchesFilter) {
+                toggledMatchStudents[i].element.show();
+            } else {
+                toggledMatchStudents[i].element.hide();
+            }
+        }
+    };
 }
 
 /**
@@ -417,6 +442,18 @@ function Model() {
 
     };
 
+    this.filterStudentTable = function() {
+        var filterString = controller.getFilterString();
+        var changeList = [];
+        for (var i = 0; i < this.student_array.length; i++) {
+            var studentFilterResult = this.student_array[i].filterSelf(filterString);
+            if (studentFilterResult !== null) {
+                changeList.push(studentFilterResult);
+            }
+        }
+        return view.filterRows(changeList);
+    };
+
     /**
      * Student - creates a student Object that holds their name, course, and grade
      * @param {string} name
@@ -426,11 +463,22 @@ function Model() {
      * @constructor
      */
     function Student(name, course, grade, id) {
-        this.name = name;
-        this.course = course;
-        this.grade = grade;
-        this.id = id;
-        this.element;
+        //  Begin public methods
+        this.filterSelf = function(filterString) {
+            var oldMatchesFilter = this.matchesFilter;
+            if (filterString === undefined) {
+                filterString = controller.getFilterString();
+            }
+            this.matchesFilter = (this.id !== undefined && checkMatch(filterString, this.id.toString())) ||
+                checkMatch(filterString, this.name) ||
+                checkMatch(filterString, this.course) ||
+                checkMatch(filterString, this.grade.toString());
+            if (oldMatchesFilter == this.matchesFilter) {
+                return null;
+            } else {
+                return this;
+            }
+        };
 
         this.delete_self = function (callback) {
             var index = this.element.index();
@@ -438,7 +486,24 @@ function Model() {
             model.student_array.splice(index, 1);
             this.element.remove();
             callback();
+        };
+        //  End public methods
+
+        //  Begin variable initialization
+        this.name = name;
+        this.course = course;
+        this.grade = grade;
+        this.id = id;
+        this.matchesFilter = false;
+        this.filterSelf();
+        this.element;
+        //  End variable initialization
+
+        //  Begin private methods
+        function checkMatch (subString, mainString) {
+            return true;
         }
+        //  End private methods
     }
 
     /**
