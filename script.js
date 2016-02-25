@@ -32,6 +32,7 @@ function Controller() {
 
         //check if form input is valid
         if(model.validateForm()) {
+            view.buttonSpinner($('#add'));
             var inputValues = [];
             for (var i = 0; i < view.inputIds.length; i++) {
                 inputValues.push($("#" + view.inputIds[i]).val());
@@ -49,14 +50,17 @@ function Controller() {
      * cancelClicked - Event Handler when user clicks the cancel button, should clear out student form
      */
     this.cancelClicked = function () {
+        view.buttonSpinner($('#cancel'));
         view.clearFormErrors();
         view.clearAddStudentForm();
+        view.stopSpinner($('#cancel'));
     };
 
     /**
      * getDataClicked - Event Handler when user clicks the Get Student Data button, loads student data from server
      */
     this.getDataClicked = function () {
+        view.buttonSpinner($('#getStudentData'));
         database.readStudentData();
         setTimeout(function() {
             view.updateView();
@@ -262,6 +266,19 @@ function View() {
 
     this.displayDeleteError = function(errorMessage) {
         console.log("This should display to the window:", errorMessage);
+    };
+
+    this.buttonSpinner = function(area) {
+        var span = $('<span>', {
+            class: "glyphicon glyphicon-refresh spinning"
+        });
+        area.prepend(span);
+        area.attr('disabled', 'disabled');
+    }
+
+    this.stopSpinner = function(area) {
+        $('span').detach();
+        area.removeAttr('disabled');
     }
 }
 
@@ -529,6 +546,7 @@ function DatabaseInterface() {
                     model.addStudent(result.data[i].name, result.data[i].course, result.data[i].grade, result.data[i].id);
                 }
                 view.updateView();
+                view.stopSpinner($('#getStudentData'));
             }
         });
     };
@@ -547,9 +565,11 @@ function DatabaseInterface() {
             url: 'http://s-apis.learningfuze.com/sgt/create',
             success: function (result) {
                 studentObj.id = result.new_id;
+                view.stopSpinner($('#add'));
                 console.log(studentObj);
             },
             error: function (result) {
+                view.stopSpinner($('#add'));
                 console.log(result);
             }
         });
