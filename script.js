@@ -23,7 +23,9 @@ var database = new DatabaseInterface();
  */
 function Controller() {
 
-    this.inputTimer = null;
+    this.autofillTimer = null;
+
+    this.filterTimer = null;
 
     /**
      * addClicked - Event Handler when user clicks the add button
@@ -38,11 +40,7 @@ function Controller() {
                 inputValues.push($("#" + view.inputIds[i]).val());
             }
             var studentObj = model.addStudent(inputValues[0], inputValues[1], inputValues[2]);
-            database.sendToServer(studentObj);
-            setTimeout(function () {
-                view.updateView();
-            }, 200);
-            view.clearAddStudentForm();
+            database.createStudentData(studentObj);
         }
     };
 
@@ -62,10 +60,6 @@ function Controller() {
     this.getDataClicked = function () {
         view.buttonSpinner($('#getStudentData'));
         database.readStudentData();
-        setTimeout(function() {
-            view.updateView();
-        }, 500);
-
     };
 
     /**
@@ -74,30 +68,45 @@ function Controller() {
     this.reset = function () {
         model.student_array = [];
         database.readStudentData();
-        view.clearAddStudentForm();
-        view.updateData();
     };
 
     /**
      * studentCourseAutoFillShowTimer - starts timer to update and show student course autofill list
      */
     this.studentCourseAutoFillShowTimer = function() {
-        if (this.inputTimer != null) {
-            clearTimeout(this.inputTimer);
+        if (this.autofillTimer != null) {
+            clearTimeout(this.autofillTimer);
         }
-        this.inputTimer = setTimeout(view.displayCourseAutoFillList(model.courseList.searchForMatchList($('#course').val())), 500);
+        this.autofillTimer = setTimeout(view.displayCourseAutoFillList(model.courseList.searchForMatchList($('#course').val())), 500);
     };
 
     /**
      * studentCourseAutoFillHideTimer - starts timer to hide student course autofill list
      */
     this.studentCourseAutoFillHideTimer = function() {
-        if (this.inputTimer != null) {
-            clearTimeout(this.inputTimer);
+        if (this.autofillTimer != null) {
+            clearTimeout(this.autofillTimer);
         }
-        this.inputTimer = setTimeout(view.displayCourseAutoFillList([]), 500);
+        this.autofillTimer = setTimeout(view.displayCourseAutoFillList([]), 500);
     };
 
+    /**
+     * filterStudentTableTimer - starts timer to filter rows by value of search bar
+     */
+    this.filterStudentTableTimer = function() {
+        if (this.filterTimer !== null) {
+            clearTimeout(this.filterTimer);
+        }
+        this.filterTimer = setTimeout(model.filterStudentTable(), 500);
+    };
+
+    /**
+     * getFilterString - Returns value of the search bar
+     * @returns {string} - filter string
+     */
+    this.getFilterString = function() {
+        return $("#tableFilter").val();
+    };
 }
 
 /**
@@ -153,6 +162,9 @@ function View() {
      */
     this.addStudentToDom = function (studentObj) {
         var table_row = $('<tr>');
+        if (!studentObj.matchesFilter) {
+            table_row.hide();
+        }
         var student_name = $('<td>').text(studentObj.name);
         var student_course = $('<td>').text(studentObj.course);
         var student_grade = $('<td>').text(studentObj.grade);
@@ -279,7 +291,21 @@ function View() {
     this.stopSpinner = function(area) {
         area.children('span').detach();
         area.removeAttr('disabled');
-    }
+    };
+
+    /**
+     * filterRows - shows or hides the given list of students, based on whether the students match the search bar filter
+     * @param {Object[]} toggledMatchStudents - list of students to hide or show
+     */
+    this.filterRows = function(toggledMatchStudents) {
+        for (var i = 0; i < toggledMatchStudents.length; i++) {
+            if (toggledMatchStudents[i].matchesFilter) {
+                toggledMatchStudents[i].element.show();
+            } else {
+                toggledMatchStudents[i].element.hide();
+            }
+        }
+    };
 }
 
 /**
@@ -428,19 +454,84 @@ function Model() {
     };
 
     /**
+     * filterStudentTable - checks every student for filter match. Sends a list of students with changes to view.filterRows().
+     */
+    this.filterStudentTable = function() {
+        var filterString = controller.getFilterString();
+        var changeList = [];
+        for (var i = 0; i < this.student_array.length; i++) {
+            var studentFilterResult = this.student_array[i].filterSelf(filterString);
+            if (studentFilterResult !== null) {
+                changeList.push(studentFilterResult);
+            }
+        }
+        return view.filterRows(changeList);
+    };
+
+    /**
+     * checkMatch - Returns whether the given string matches the given search string according to the specified match method
+     * @param {string} searchString - string to use as condition for match
+     * @param {string} mainString - string to check for match
+     * @param {string} matchMethod - specifies method of match. All methods are case insensitive:
+     *     "keywords" - checks that all words/numbers, delimited by spaces, are in the main string
+     *     "contains" - checks that the full search string is inside the main string at any position
+     *     "begins with" - checks that the main string starts with the full string
+     * @returns {boolean} - true if the match method conditions are satisfied, false otherwise or if match method is invalid. Empty search string always returns true.
+     */
+    function checkMatch (searchString, mainString, matchMethod) {
+        if (searchString.length == 0) {
+            return true;
+        }
+        searchString = searchString.toLowerCase();
+        mainString = mainString.toLowerCase();
+        switch (matchMethod) {
+            case "begins with":
+                return mainString.indexOf(searchString) == 0;
+            case "contains":
+                return mainString.indexOf(searchString) > -1;
+            case "keywords":
+                var keywordList = searchString.split(" ");
+                for (var i = 0; i < keywordList.length; i++) {
+                    if (mainString.indexOf(keywordList[i]) == -1) {
+                        return false;
+                    }
+                }
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
      * Student - creates a student Object that holds their name, course, and grade
      * @param {string} name
      * @param {string} course
      * @param {number} grade
-     * @param {number} id
+     * @param {number} [id]
      * @constructor
      */
     function Student(name, course, grade, id) {
-        this.name = name;
-        this.course = course;
-        this.grade = grade;
-        this.id = id;
-        this.element;
+        //  Begin public methods
+        /**
+         * filterSelf - checks whether Student is included in the given filter and returns self if value has changed
+         * @param {string} [filterString] - filter string.  Gets filter from controller if not specified.
+         * @returns {Object|null} - returns self if filtered status has changed, null otherwise.
+         */
+        this.filterSelf = function(filterString) {
+            var oldMatchesFilter = this.matchesFilter;
+            if (filterString === undefined) {
+                filterString = controller.getFilterString();
+            }
+            this.matchesFilter = /*(this.id !== undefined && checkMatch(filterString, this.id.toString(), "keywords")) ||
+                */checkMatch(filterString, this.name, "keywords") ||
+                checkMatch(filterString, this.course, "keywords") ||
+                checkMatch(filterString, this.grade.toString(), "keywords");
+            if (oldMatchesFilter == this.matchesFilter) {
+                return null;
+            } else {
+                return this;
+            }
+        };
 
         this.delete_self = function (callback) {
             var index = this.element.index();
@@ -448,7 +539,21 @@ function Model() {
             model.student_array.splice(index, 1);
             this.element.remove();
             callback();
-        }
+        };
+        //  End public methods
+
+        //  Begin variable initialization
+        this.name = name;
+        this.course = course;
+        this.grade = grade;
+        this.id = id;
+        this.matchesFilter = false; // Current filter status
+        this.filterSelf(); // Filters self on construction
+        this.element;
+        //  End variable initialization
+
+        //  Begin private methods
+        //  End private methods
     }
 
     /**
@@ -507,7 +612,7 @@ function Model() {
             var filteredList = [];
             for (var course in courseList) {
                 if (courseList.hasOwnProperty(course) && courseList[course] > 0) {
-                    if (filterString.toLowerCase() == course.substr(0, filterString.length).toLowerCase()) {
+                    if (checkMatch(filterString, course, "contains")) {
                         filteredList.push([course, courseList[course]]);
                     }
                 }
@@ -547,11 +652,15 @@ function DatabaseInterface() {
                 }
                 view.updateView();
                 view.stopSpinner($('#getStudentData'));
+            },
+            error: function(response) {
+                console.log(response);
+                view.stopSpinner($('#getStudentData'));
             }
         });
     };
 
-    this.sendToServer = function(studentObj) {
+    this.createStudentData = function(studentObj) {
         var studentID;
         $.ajax({
             type: "POST",
@@ -565,6 +674,8 @@ function DatabaseInterface() {
             url: 'http://s-apis.learningfuze.com/sgt/create',
             success: function (result) {
                 studentObj.id = result.new_id;
+                view.clearAddStudentForm();
+                view.updateView();
                 view.stopSpinner($('#add'));
                 console.log(studentObj);
             },
