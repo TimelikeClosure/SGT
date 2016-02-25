@@ -274,10 +274,10 @@ function View() {
         });
         area.prepend(span);
         area.attr('disabled', 'disabled');
-    }
+    };
 
     this.stopSpinner = function(area) {
-        $('span').detach();
+        area.children('span').detach();
         area.removeAttr('disabled');
     }
 }
