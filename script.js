@@ -38,7 +38,7 @@ function Controller() {
                 inputValues.push($("#" + view.inputIds[i]).val());
             }
             var studentObj = model.addStudent(inputValues[0], inputValues[1], inputValues[2]);
-            database.sendToServer(studentObj);
+            database.createStudentData(studentObj);
         }
     };
 
@@ -66,8 +66,6 @@ function Controller() {
     this.reset = function () {
         model.student_array = [];
         database.readStudentData();
-        view.clearAddStudentForm();
-        view.updateData();
     };
 
     /**
@@ -547,7 +545,7 @@ function DatabaseInterface() {
         });
     };
 
-    this.sendToServer = function(studentObj) {
+    this.createStudentData = function(studentObj) {
         var studentID;
         $.ajax({
             type: "POST",
