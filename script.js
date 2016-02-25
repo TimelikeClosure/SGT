@@ -469,8 +469,8 @@ function Model() {
             if (filterString === undefined) {
                 filterString = controller.getFilterString();
             }
-            this.matchesFilter = (this.id !== undefined && checkMatch(filterString, this.id.toString())) ||
-                checkMatch(filterString, this.name) ||
+            this.matchesFilter = /*(this.id !== undefined && checkMatch(filterString, this.id.toString())) ||
+                */checkMatch(filterString, this.name) ||
                 checkMatch(filterString, this.course) ||
                 checkMatch(filterString, this.grade.toString());
             if (oldMatchesFilter == this.matchesFilter) {
@@ -501,6 +501,16 @@ function Model() {
 
         //  Begin private methods
         function checkMatch (subString, mainString) {
+            if (subString.length == 0) {
+                return true;
+            }
+            var subStringWordList = subString.toLowerCase().split(" ");
+            mainString = mainString.toLowerCase();
+            for (var i = 0; i < subStringWordList.length; i++) {
+                if (mainString.indexOf(subStringWordList[i]) == -1) {
+                    return false;
+                }
+            }
             return true;
         }
         //  End private methods
