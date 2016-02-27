@@ -36,7 +36,7 @@
                         <span class="glyphicon glyphicon-user"></span>
                     </span>
                     <input type="text" class="form-control" name="studentName" id="studentName" placeholder="Student Name"
-                           data-toggle="popover" data-placement="left">
+                           data-toggle="popover" data-placement="left" required pattern="^[A-Za-z -]+$">
                 </div>
                 <div class="input-group form-group">
                     <span  class="input-group-addon">
@@ -45,14 +45,15 @@
                     <input type="text" class="form-control" name="course" id="course"
                            placeholder="Student Course" onkeyup="controller.studentCourseAutoFillShowTimer();"
                            onfocus="controller.studentCourseAutoFillShowTimer();"
-                           onblur="controller.studentCourseAutoFillHideTimer();" data-toggle="popover" data-placement="left">
+                           onblur="controller.studentCourseAutoFillHideTimer();" data-toggle="popover" data-placement="left"
+                           required pattern="^[\w -]+$">
                 </div>
                 <div class="input-group form-group">
                     <span class="input-group-addon">
                         <span class="glyphicon glyphicon-education"></span>
                     </span>
-                    <input type="text" class="form-control" name="studentGrade" id="studentGrade"
-                           placeholder="Student Grade" data-toggle="popover" data-placement="left">
+                    <input type="number" min="0" max="100" class="form-control" name="studentGrade" id="studentGrade"
+                           placeholder="Student Grade" data-toggle="popover" data-placement="left" required pattern="^(?:\d+\.)?\d$">
                 </div>
                 <button type="button" id="success" class="btn btn-success" onclick="controller.addClicked();">Add</button>
                 <button type="button" id="cancel" class="btn btn-default" onclick="controller.cancelClicked();">Cancel</button>
@@ -68,7 +69,7 @@
                     <span class="input-group-addon">
                         <span class="glyphicon glyphicon-search"></span>
                     </span>
-                        <input type="text" class="form-control" name="tableFilter" id="tableFilter" placeholder="Search Fields"
+                        <input type="search" class="form-control" name="tableFilter" id="tableFilter" placeholder="Quick Search"
                                data-toggle="popover" data-placement="left" onkeyup="controller.filterStudentTableTimer();">
                     </div>
                 </div>
