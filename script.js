@@ -670,6 +670,7 @@ function DatabaseInterface() {
             },
             url: 'http://s-apis.learningfuze.com/sgt/create',
             success: function (result) {
+                console.log(result);
                 studentObj.id = result.new_id;
                 view.clearAddStudentForm();
                 view.updateView();
