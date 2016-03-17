@@ -639,9 +639,11 @@ function DatabaseInterface() {
             type: "POST",
             dataType: 'json',
             data: {
-                api_key: "ihCyt8Un6o"
+                //api_key: "ihCyt8Un6o"
+                api_key: "9s6bvouy3t4roslo937vlosb7lo4tysol4u9tsloye4btlosyl4et8vbs9e4yb9y"
             },
-            url: 'http://s-apis.learningfuze.com/sgt/get',
+            //url: 'http://s-apis.learningfuze.com/sgt/get',
+            url: 'server_requests/get.php',
             success: function (result) {
                 console.log(result);
                 for (var i  in result.data) {
@@ -669,6 +671,7 @@ function DatabaseInterface() {
                 grade: studentObj.grade
             },
             url: 'http://s-apis.learningfuze.com/sgt/create',
+            //url: 'server_requests/get.php',
             success: function (result) {
                 console.log(result);
                 studentObj.id = result.new_id;
