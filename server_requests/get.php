@@ -16,33 +16,35 @@
         exit();
     }
     /**
-     * preparedStatement - Creates, binds, and executes a prepared statement of the given MySQL query. Returns results from that query if no errors occur, otherwise prints an error to the browser and halts script.
-     * @param {Object} $connection - mysqli object
-     * @param {Array} $output - associative array reference used to contain all output
+     * preparedStatement - Creates, binds, and executes a prepared statement of the given MySQL query. Returns results from that query or an error message.
+     * @param {Object} $connection - mysqli connection object
      * @param {string} $queryString - MySQL query string from which to create a mysqli prepared statement
-     * @param {string[]} $inputKeys - array of input variable names to bind to prepared statement
+     * @param {Array} $inputKeys - array of input variables to bind to prepared statement
      * @param {string[]} $outputKeys - array of output key names to bind output to
-     * @return {Array} mixed
+     * @return {Array} $output - associative array containing either bound response data on an error message
      */
-    function preparedStatement($connection, $output, $queryString, $inputKeys, $outputKeys) {
+    function preparedStatement($connection, $queryString, $inputParams, $outputKeys) {
         //$output['status'][] = 'entered preparedStatement()';
         $preparedStatement = $connection->prepare($queryString);
         if (!$preparedStatement) {
-            returnError($output, "Prepare failed: (" . $connection->errno . ") " . $connection->error);
+            $output['error_msg'] = "Prepare failed: (" . $connection->errno . ") " . $connection->error;
+            return $output;
         }
         //$output['status'][] = 'statement prepared';
-        if (!empty($inputKeys)) {
-            foreach($inputKeys as $keyString) {
-                $inputParams[] = $$keyString;
+        if (!empty($inputParams)) {
+            foreach($inputParams as $keyString) {
+                $output['inputParams'][] = $keyString;
             }
             $status = $preparedStatement->bind_param(...$inputParams);
             if (!$status) {
-                returnError($output, "Execute failed: ({$preparedStatement->errno}) {$preparedStatement->error}");
+                $output['error_msg'] = "Bind_param failed: ({$preparedStatement->errno}) {$preparedStatement->error}";
+                return $output;
             }
             //$output['status'][] = 'parameters bound';
         }
         if (!$preparedStatement->execute()) {
-            returnError($output, "Execute failed: ({$preparedStatement->errno}) {$preparedStatement->error}");
+            $output['error_msg'] = "Execute failed: ({$preparedStatement->errno}) {$preparedStatement->error}";
+            return $output;
         }
         //$output['status'][] = 'statement executed';
         foreach($outputKeys as $keyString) {
@@ -50,7 +52,8 @@
         }
         $preparedStatement->bind_result(...$outputParams);
         if (!$outputParams) {
-            returnError($output, "Result failed: ({$preparedStatement->errno}) {$preparedStatement->error}");
+            $output['error_msg'] = "Bind_result failed: ({$preparedStatement->errno}) {$preparedStatement->error}";
+            return $output;
         }
         //$output['status'][] = 'results bound';
         while($preparedStatement->fetch()) {
@@ -76,8 +79,28 @@
     if ($conn->connect_errno) {
         returnError($output, "Failed to connect to database: {$conn->connect_errno}: {$conn->connect_error}");
     }
-    //  Query the database
-    $output = preparedStatement($conn, $output, 'SELECT course_name, grade, id, student_name FROM grade_table', [], ['course', 'grade', 'id', 'name']);
+    //  Get rows from database that match api_key
+    $response = preparedStatement($conn, 'SELECT id, read_own, read_all FROM user_table WHERE api_key=(?)', ['s', $apiKey], ['userId', 'readOwn', 'readAll']);
+    if (!empty($response['error_msg'])) {
+        returnError($output, $response['error_msg']);
+    }
+    //  If set of rows returned is empty or no read permissions, throw access denied error
+    if (empty($response['data'][0]['readOwn'])) {
+        returnError($output, 'Access Denied');
+    }
+    //  If read permissions are limited to self, only query own entries
+    if (empty($response['data'][0]['readAll'])) {
+        $response = preparedStatement($conn, 'SELECT course_name, grade, id, student_name FROM grade_table WHERE user_id=(?)', ['i', $response['data'][0]['userId']], ['course', 'grade', 'id', 'name']);
+    } else {
+        //  Else get all available grades from the database
+        $response = preparedStatement($conn, 'SELECT course_name, grade, id, student_name FROM grade_table', [], ['course', 'grade', 'id', 'name']);
+    }
+    if (!empty($response['error_msg'])) {
+        returnError($output, $response['error_msg']);
+    }
+    foreach($response as $key => $value) {
+        $output[$key] = $value;
+    }
     //  Output to client
     $output['success'] = true;
     print(json_encode($output));
