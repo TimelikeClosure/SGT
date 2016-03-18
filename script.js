@@ -646,8 +646,10 @@ function DatabaseInterface() {
             url: 'server_requests/get.php',
             success: function (result) {
                 console.log(result);
-                for (var i  in result.data) {
-                    model.addStudent(result.data[i].name, result.data[i].course, result.data[i].grade, result.data[i].id);
+                for (var i in result.data) {
+                    if (result.data[i].hasOwnProperty('name') && result.data[i].hasOwnProperty('course') && result.data[i].hasOwnProperty('grade') && result.data[i].hasOwnProperty('id')) {
+                        model.addStudent(result.data[i].name, result.data[i].course, result.data[i].grade, result.data[i].id);
+                    }
                 }
                 view.updateView();
                 view.stopSpinner($('#getStudentData'));
