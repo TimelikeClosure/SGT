@@ -15,54 +15,54 @@
         print(json_encode($output));
         exit();
     }
-    function preparedStatement($connection, $output, $queryString, $inputParams, $outputKeys) {
-        $output['status'][] = 'entered preparedStatement()';
+    /**
+     * preparedStatement - Creates, binds, and executes a prepared statement of the given MySQL query. Returns results from that query if no errors occur, otherwise prints an error to the browser and halts script.
+     * @param {Object} $connection - mysqli object
+     * @param {Array} $output - associative array reference used to contain all output
+     * @param {string} $queryString - MySQL query string from which to create a mysqli prepared statement
+     * @param {string[]} $inputKeys - array of input variable names to bind to prepared statement
+     * @param {string[]} $outputKeys - array of output key names to bind output to
+     * @return {Array} mixed
+     */
+    function preparedStatement($connection, $output, $queryString, $inputKeys, $outputKeys) {
+        //$output['status'][] = 'entered preparedStatement()';
         $preparedStatement = $connection->prepare($queryString);
         if (!$preparedStatement) {
             returnError($output, "Prepare failed: (" . $connection->errno . ") " . $connection->error);
         }
-        $output['status'][] = 'statement prepared';
-        if (!empty($inputParams)) {
-            $status = call_user_func_array(array($preparedStatement, 'bind_param'), $inputParams);
+        //$output['status'][] = 'statement prepared';
+        if (!empty($inputKeys)) {
+            foreach($inputKeys as $keyString) {
+                $inputParams[] = $$keyString;
+            }
+            $status = $preparedStatement->bind_param(...$inputParams);
             if (!$status) {
                 returnError($output, "Execute failed: ({$preparedStatement->errno}) {$preparedStatement->error}");
             }
-            $output['data'][] = 'parameters bound';
+            //$output['status'][] = 'parameters bound';
         }
         if (!$preparedStatement->execute()) {
             returnError($output, "Execute failed: ({$preparedStatement->errno}) {$preparedStatement->error}");
         }
-        $output['status'][] = 'statement executed';
-
+        //$output['status'][] = 'statement executed';
         foreach($outputKeys as $keyString) {
             $outputParams[] = $$keyString;
         }
-        $output['outputParams'][] = $outputParams;
-
         $preparedStatement->bind_result(...$outputParams);
         if (!$outputParams) {
             returnError($output, "Result failed: ({$preparedStatement->errno}) {$preparedStatement->error}");
         }
-        $output['status'][] = 'results bound';
+        //$output['status'][] = 'results bound';
         while($preparedStatement->fetch()) {
-            $temp = [];
-            foreach($outputParams as $keyVar) {
-                $temp['value'][] = $keyVar;
-                $output['$keyVar'][] = $keyVar;
+            foreach($outputKeys as $index => $key) {
+                $row[$key] = $outputParams[$index];
             }
-            foreach($outputKeys as $keyString) {
-                $output['keyString'][] = $keyString;
-                $temp['key'][] = $keyString;
-            }
-            foreach($temp['key'] as $index => $key) {
-                $temp2[$key] = $temp['value'][$index];
-            }
-            $output['data'][] = $temp2;
+            $output['data'][] = $row;
         }
-
-
+        $preparedStatement->close();
         return $output;
     }
+
     //  Check for valid API Key characters & length
     $apiKey = filter_input(INPUT_POST, 'api_key', FILTER_VALIDATE_REGEXP, ['options'=>['regexp'=>'/^[a-z0-9]{64}$/i']]);
     if ($apiKey === null || $apiKey === false) {
@@ -76,43 +76,9 @@
     if ($conn->connect_errno) {
         returnError($output, "Failed to connect to database: {$conn->connect_errno}: {$conn->connect_error}");
     }
-
+    //  Query the database
     $output = preparedStatement($conn, $output, 'SELECT course_name, grade, id, student_name FROM grade_table', [], ['course', 'grade', 'id', 'name']);
-
-    /*$preparedStatement = $conn->prepare('SELECT course_name, grade, id, student_name FROM grade_table');
-    if (!$preparedStatement) {
-        returnError($output, "Prepare failed: (" . $conn->errno . ") " . $conn->error);
-    }
-    if (!$preparedStatement->execute()) {
-        returnError($output, "Execute failed: ({$preparedStatement->errno}) {$preparedStatement->error}");
-    }
-    $result = [
-        'course'=>null,
-        'grade'=>null,
-        'id'=>null,
-        'student'=>null
-    ];
-    $test = '[
-        $result["course"],
-        $result["grade"],
-        $result["id"],
-        $result["student"]
-    ]';
-    $preparedStatement->bind_result(...($$test));
-    //call_user_func_array([$preparedStatement, 'bind_result'], [$result['course'], $result['grade'], $result['id'], $result['student']]);
-    if (!$result){
-        returnError($output, "Result failed: ({$preparedStatement->errno}) {$preparedStatement->error}");
-    }
-    while ($preparedStatement->fetch()) {
-        $temp['course'] = $result['course'];
-        $temp['grade'] = $result['grade'];
-        $temp['id'] = $result['id'];
-        $temp['name'] = $result['student'];
-        $output['data'][] = $temp;
-    }
-    $preparedStatement->close();
-    if ($output['success'] === null) {
-        $output['success'] = true;
-    }*/
+    //  Output to client
+    $output['success'] = true;
     print(json_encode($output));
 ?>
