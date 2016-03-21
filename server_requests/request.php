@@ -33,9 +33,6 @@
         }
         //$output['status'][] = 'statement prepared';
         if (!empty($inputParams)) {
-            foreach($inputParams as $keyString) {
-                $output['inputParams'][] = $keyString;
-            }
             $status = $preparedStatement->bind_param(...$inputParams);
             if (!$status) {
                 $output['error_msg'] = "Bind_param failed: ({$preparedStatement->errno}) {$preparedStatement->error}";
