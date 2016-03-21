@@ -640,7 +640,8 @@ function DatabaseInterface() {
             dataType: 'json',
             data: {
                 //api_key: "ihCyt8Un6o"
-                api_key: "9s6bvouy3t4roslo937vlosb7lo4tysol4u9tsloye4btlosyl4et8vbs9e4yb9y"
+                api_key: '9s6bvouy3t4roslo937vlosb7lo4tysol4u9tsloye4btlosyl4et8vbs9e4yb9y',
+                request: 'get_all'
             },
             //url: 'http://s-apis.learningfuze.com/sgt/get',
             url: 'server_requests/get.php',

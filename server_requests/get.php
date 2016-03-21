@@ -1,4 +1,5 @@
 <?php
+    $INTERNAL_LOAD = true;
     //  Create skeleton output array
     $output = [
         'data' => [],
@@ -69,39 +70,26 @@
     //  Check for valid API Key characters & length
     $apiKey = filter_input(INPUT_POST, 'api_key', FILTER_VALIDATE_REGEXP, ['options'=>['regexp'=>'/^[a-z0-9]{64}$/i']]);
     if ($apiKey === null || $apiKey === false) {
-        $output['api_key'] = $_POST['api_key'];
-        $output['apiKey'] = $apiKey;
         returnError($output, "Access Denied");
-        exit();
     }
     //  Initiate connection with database
     require_once('connection.php');
     if ($conn->connect_errno) {
         returnError($output, "Failed to connect to database: {$conn->connect_errno}: {$conn->connect_error}");
     }
-    //  Get rows from database that match api_key
-    $response = preparedStatement($conn, 'SELECT id, read_own, read_all FROM user_table WHERE api_key=(?)', ['s', $apiKey], ['userId', 'readOwn', 'readAll']);
-    if (!empty($response['error_msg'])) {
-        returnError($output, $response['error_msg']);
+    //  Check for valid request characters & length
+    $request = filter_input(INPUT_POST, 'request', FILTER_VALIDATE_REGEXP, ['options'=>['regexp'=>'/^(?:get_all|insert_row|delete_row)$/']]);
+    switch ($request) {
+        case 'get_all':
+            require('get_all.php');
+            break;
+        case 'insert_row':
+            require('insert_row.php');
+            break;
+        case 'delete_row':
+            require('delete_row.php');
+            break;
+        default:
+            returnError($output, "Bad Request");
     }
-    //  If set of rows returned is empty or no read permissions, throw access denied error
-    if (empty($response['data'][0]['readOwn'])) {
-        returnError($output, 'Access Denied');
-    }
-    //  If read permissions are limited to self, only query own entries
-    if (empty($response['data'][0]['readAll'])) {
-        $response = preparedStatement($conn, 'SELECT course_name, grade, id, student_name FROM grade_table WHERE user_id=(?)', ['i', $response['data'][0]['userId']], ['course', 'grade', 'id', 'name']);
-    } else {
-        //  Else get all available grades from the database
-        $response = preparedStatement($conn, 'SELECT course_name, grade, id, student_name FROM grade_table', [], ['course', 'grade', 'id', 'name']);
-    }
-    if (!empty($response['error_msg'])) {
-        returnError($output, $response['error_msg']);
-    }
-    foreach($response as $key => $value) {
-        $output[$key] = $value;
-    }
-    //  Output to client
-    $output['success'] = true;
-    print(json_encode($output));
 ?>
