@@ -639,13 +639,18 @@ function DatabaseInterface() {
             type: "POST",
             dataType: 'json',
             data: {
-                api_key: "ihCyt8Un6o"
+                //api_key: "ihCyt8Un6o"
+                api_key: '9s6bvouy3t4roslo937vlosb7lo4tysol4u9tsloye4btlosyl4et8vbs9e4yb9y',
+                request: 'get_all'
             },
-            url: 'http://s-apis.learningfuze.com/sgt/get',
+            //url: 'http://s-apis.learningfuze.com/sgt/get',
+            url: 'server_requests/request.php',
             success: function (result) {
                 console.log(result);
-                for (var i  in result.data) {
-                    model.addStudent(result.data[i].name, result.data[i].course, result.data[i].grade, result.data[i].id);
+                for (var i in result.data) {
+                    if (result.data[i].hasOwnProperty('name') && result.data[i].hasOwnProperty('course') && result.data[i].hasOwnProperty('grade') && result.data[i].hasOwnProperty('id')) {
+                        model.addStudent(result.data[i].name, result.data[i].course, result.data[i].grade, result.data[i].id);
+                    }
                 }
                 view.updateView();
                 view.stopSpinner($('#getStudentData'));
@@ -663,13 +668,17 @@ function DatabaseInterface() {
             type: "POST",
             dataType: 'json',
             data: {
-                api_key: "ihCyt8Un6o",
+                //api_key: "ihCyt8Un6o",
+                api_key: '9s6bvouy3t4roslo937vlosb7lo4tysol4u9tsloye4btlosyl4et8vbs9e4yb9y',
+                request: 'insert_row',
                 name: studentObj.name,
                 course: studentObj.course,
                 grade: studentObj.grade
             },
-            url: 'http://s-apis.learningfuze.com/sgt/create',
+            //url: 'http://s-apis.learningfuze.com/sgt/create',
+            url: 'server_requests/request.php',
             success: function (result) {
+                console.log(result);
                 studentObj.id = result.new_id;
                 view.clearAddStudentForm();
                 view.updateView();
@@ -689,10 +698,12 @@ function DatabaseInterface() {
             dataType: 'json',
             data: {
                 api_key: "ihCyt8Un6o",
+                request: 'delete_row',
                 student_id: student.id/*,
                  "force-failure": "request"*/
             },
             url: 'http://s-apis.learningfuze.com/sgt/delete',
+            //url: 'server_requests/request.php',
             success: function(response) {
                 if (response.success) {
                     student.delete_self(successCallback);
