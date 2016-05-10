@@ -173,7 +173,8 @@ function View() {
         var delete_button = $('<button>', {
             type: 'button',
             class: 'btn btn-danger btn-xs',
-            text: 'Delete'
+            text: 'Delete',
+            disabled: true
 
         }).click(function () {
             model.removeStudent(studentObj);
