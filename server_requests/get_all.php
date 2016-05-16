@@ -19,7 +19,7 @@
         //  Else get all available grades from the database
         $response = preparedStatement($conn, 'SELECT course_name, grade, id, student_name FROM grade_table', [], ['course', 'grade', 'id', 'name']);
     }
-    if (!empty($response['error_msg'])) {
+    if (empty($response['success'])) {
         returnError($output, $response['error_msg']);
     }
     foreach($response as $key => $value) {

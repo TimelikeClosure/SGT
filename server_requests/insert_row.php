@@ -9,7 +9,7 @@
     $studentGrade = $_POST['grade'];
     //  Get rows from database that match api_key
     $response = preparedStatement($conn, 'SELECT id, insert_own FROM user_table WHERE api_key=(?)', ['s', $apiKey], ['userId', 'insertOwn']);
-    if (!empty($response['error_msg'])) {
+    if (empty($response['success'])) {
         returnError($output, $response['error_msg']);
     }
     //  If set of rows returned is empty or no insert permissions, throw access denied error
