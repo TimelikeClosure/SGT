@@ -22,7 +22,7 @@
      * @param {string} $queryString - MySQL query string from which to create a mysqli prepared statement
      * @param {Array} $inputKeys - array of input variables to bind to prepared statement
      * @param {string[]} $outputKeys - array of output key names to bind output to
-     * @return {Array} $output - associative array containing either bound response data on an error message
+     * @return {Array} $output - associative array containing either bound response data or an error message
      */
     function preparedStatement($connection, $queryString, $inputParams, $outputKeys) {
         //$output['status'][] = 'entered preparedStatement()';

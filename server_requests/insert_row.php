@@ -29,6 +29,7 @@
     foreach($response as $key => $value) {
         $output[$key] = $value;
     }
+    $output['id'] = $conn->insert_id;
     //  Output to client
     $output['success'] = true;
     print(json_encode($output));
