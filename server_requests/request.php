@@ -106,7 +106,7 @@
     }
 
     //  Check for valid API Key characters & length
-    $apiKey = filter_input(INPUT_POST, 'api_key', FILTER_VALIDATE_REGEXP, ['options'=>['regexp'=>'/^[a-z0-9]{64}$/i']]);
+    $apiKey = filter_var($_POST['api_key'], FILTER_VALIDATE_REGEXP, ['options'=>['regexp'=>'/^[a-z0-9]{64}$/i']]);
     if ($apiKey === null || $apiKey === false) {
         returnError($output, "Access Denied");
     }
@@ -116,7 +116,7 @@
         returnError($output, "Failed to connect to database: {$conn->connect_errno}: {$conn->connect_error}");
     }
     //  Check for valid request characters & length
-    $request = filter_input(INPUT_POST, 'request', FILTER_VALIDATE_REGEXP, ['options'=>['regexp'=>'/^(?:get_all|insert_row|delete_row)$/']]);
+    $request = filter_var($_POST['request'], FILTER_VALIDATE_REGEXP, ['options'=>['regexp'=>'/^(?:get_all|insert_row|delete_row)$/']]);
     switch ($request) {
         case 'get_all':
             require('get_all.php');
