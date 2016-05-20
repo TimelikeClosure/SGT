@@ -53,7 +53,7 @@
                         <span class="glyphicon glyphicon-education"></span>
                     </span>
                     <input type="number" min="0" max="100" class="form-control" name="studentGrade" id="studentGrade"
-                           placeholder="Student Grade" data-toggle="popover" data-placement="left" required pattern="^(?:\d+\.)?\d$">
+                           placeholder="Student Grade" data-toggle="popover" data-placement="left" required pattern="^(?:100(?:\.(?:0))?|[0-9]{1,2}(?:\.(?:[0-9])?)?)$">
                 </div>
                 <button type="button" id="success" class="btn btn-success" onclick="controller.addClicked();">Add</button>
                 <button type="button" id="cancel" class="btn btn-default" onclick="controller.cancelClicked();">Cancel</button>
