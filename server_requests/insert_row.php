@@ -12,7 +12,7 @@
     if (empty($studentCourse)) {
         returnError($output, 'Invalid course');
     }
-    $studentGrade = filter_var($_POST['grade'], FILTER_VALIDATE_REGEXP, ['options'=>['regexp'=>'/^(?:\d+\.)?\d$/']]);
+    $studentGrade = filter_var($_POST['grade'], FILTER_VALIDATE_REGEXP, ['options'=>['regexp'=>'/^(?:100(?:\.(?:0))?|[0-9]{1,2}(?:\.(?:[0-9])?)?)$/']]);
     if (empty($studentGrade)) {
         returnError($output, 'Invalid student grade');
     }
