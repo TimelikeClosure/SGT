@@ -4,9 +4,18 @@
         exit();
     }
 
-    $studentName = $_POST['name'];
-    $studentCourse = $_POST['course'];
-    $studentGrade = $_POST['grade'];
+    $studentName = filter_var($_POST['name'], FILTER_VALIDATE_REGEXP, ['options'=>['regexp'=>'/^[A-Za-z -]+$/']]);
+    if (empty($studentName)) {
+        returnError($output, 'Invalid student name');
+    }
+    $studentCourse = filter_var($_POST['course'], FILTER_VALIDATE_REGEXP, ['options'=>['regexp'=>'/[\w -]+$/']]);
+    if (empty($studentCourse)) {
+        returnError($output, 'Invalid course');
+    }
+    $studentGrade = filter_var($_POST['grade'], FILTER_VALIDATE_REGEXP, ['options'=>['regexp'=>'/^(?:\d+\.)?\d$/']]);
+    if (empty($studentGrade)) {
+        returnError($output, 'Invalid student grade');
+    }
     //  Get rows from database that match api_key
     $response = preparedStatement($conn, 'SELECT id, insert_own FROM user_table WHERE api_key=(?)', ['s', $apiKey], ['userId', 'insertOwn']);
     if (empty($response['success'])) {
