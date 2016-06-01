@@ -1,11 +1,23 @@
 # SGT - Student Grade Table
+
 ## Overview
 
 
-##What I've learned
 
+Link to [live version](http://sgt.timhoristjr.com).
+Link to [latest stable version](http://staging.sgt.timhoristjr.com).
 
-##What I want to do with this
+## Feature List
 
+  * stuff
 
-##Additional features I’ve added
+### Planned additions
+
+  * stuff
+
+## What I've learned
+
+  *
+
+## Screenshots
+
