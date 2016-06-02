@@ -281,17 +281,17 @@ function View() {
         console.log("This should display to the window:", errorMessage);
     };
 
-    this.buttonSpinner = function(area) {
+    this.buttonSpinner = function(element) {
         var span = $('<span>', {
             class: "glyphicon glyphicon-refresh spinning"
         });
-        area.prepend(span);
-        area.attr('disabled', 'disabled');
+        element.prepend(span);
+        element.attr('disabled', 'disabled');
     };
 
-    this.stopSpinner = function(area) {
-        area.children('span').detach();
-        area.removeAttr('disabled');
+    this.stopSpinner = function(element) {
+        element.children('span').detach();
+        element.removeAttr('disabled');
     };
 
     /**
