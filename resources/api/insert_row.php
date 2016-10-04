@@ -29,7 +29,7 @@
     $response = preparedStatement($conn,
         'INSERT INTO grade_table(grade, student_name, course_name, user_id) VALUES ((?), (?), (?), (?))',
         ['sssi', $studentGrade, $studentName, $studentCourse, $response['data'][0]['userId']],
-        ['grade_id']
+        []
     );
 
     if (!empty($response['error_msg'])) {
@@ -38,7 +38,6 @@
     foreach($response as $key => $value) {
         $output[$key] = $value;
     }
-    $output['id'] = $conn->insert_id;
     //  Output to client
     $output['success'] = true;
     print(json_encode($output));

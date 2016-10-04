@@ -646,7 +646,6 @@ function DatabaseInterface() {
             data: data,
             url: 'api/request.php',
             success: function (result) {
-                console.log(result);
                 for (var i in result.data) {
                     if (result.data[i].hasOwnProperty('name') && result.data[i].hasOwnProperty('course') && result.data[i].hasOwnProperty('grade') && result.data[i].hasOwnProperty('id')) {
                         model.addStudent(result.data[i].name, result.data[i].course, result.data[i].grade, result.data[i].id);
@@ -656,7 +655,6 @@ function DatabaseInterface() {
                 view.stopSpinner($('#getStudentData'));
             },
             error: function(response) {
-                console.log(response);
                 view.stopSpinner($('#getStudentData'));
             }
         });
@@ -676,16 +674,13 @@ function DatabaseInterface() {
             },
             url: 'api/request.php',
             success: function (result) {
-                console.log(result);
-                studentObj.id = result.new_id;
+                studentObj.id = result.data.id;
                 view.clearAddStudentForm();
                 view.updateView();
                 view.stopSpinner($('#add'));
-                console.log(studentObj);
             },
             error: function (result) {
                 view.stopSpinner($('#add'));
-                console.log(result);
             }
         });
     };

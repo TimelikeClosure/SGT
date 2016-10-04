@@ -1,6 +1,7 @@
 <?php
     $INTERNAL_LOAD = true;
     define('RESOURCES', '../../resources/');
+    //require_once(RESOURCES . 'modules.php');
     //  Create skeleton output array
     $output = [
         'data' => [],
@@ -62,16 +63,18 @@
          * if $outputKeys == ["keyName1", "keyName2", "keyName3"],
          * then $outputParameters == [$keyName1, $keyName2, $keyName3].
          */
-        foreach($outputKeys as $keyString) {
-            $outputParameters[] = $keyString;
-        }
-        /** Binds output columns to the resulting output parameters. */
-        $preparedStatement->bind_result(...$outputParameters);
-        if (!$outputParameters) {
-            $output['success'] = false;
-            $output['error_no'] = $connection->errno;
-            $output['error_msg'] = $connection->error;
-            return $output;
+        if (count($outputKeys) > 0){
+            foreach($outputKeys as $keyString) {
+                $outputParameters[] = $keyString;
+            }
+            /** Binds output columns to the resulting output parameters. */
+            $preparedStatement->bind_result(...$outputParameters);
+            if (!$outputParameters) {
+                $output['success'] = false;
+                $output['error_no'] = $connection->errno;
+                $output['error_msg'] = $connection->error;
+                return $output;
+            }
         }
         /**
          * Fetches all rows and stores them for output. For example:
@@ -88,7 +91,7 @@
         }
         if (!empty($preparedStatement->insert_id)) {
             $output['success'] = true;
-            $output['insert_id'] = $preparedStatement->insert_id;
+            $output['data']['id'] = $preparedStatement->insert_id;
         } else if ($output['success'] == null) {
             $output['success'] = false;
             $output['error_no'] = null;
