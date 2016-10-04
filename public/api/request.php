@@ -34,7 +34,6 @@
         $output['success'] = null;
         /** Sends the prepared statement, before any input parameters are inserted, to the server. */
         $preparedStatement = $connection->prepare($queryString);
-        $output['progress'][] = "Statement sent";
         if (!$preparedStatement) {
             $output['success'] = false;
             $output['error_no'] = $connection->errno;
@@ -44,7 +43,6 @@
         /** Binds input parameters to the prepared statement, if provided. */
         if (!empty($inputParameters)) {
             $status = $preparedStatement->bind_param(...$inputParameters);
-            $output['progress'][] = "Input parameters bound";
             if (!$status) {
                 $output['success'] = false;
                 $output['error_no'] = $connection->errno;
@@ -54,13 +52,11 @@
         }
         /** Sends the input parameters to the server to be inserted into the previously sent statement. */
         if (!$preparedStatement->execute()) {
-            $output['progress'][] = "Statement executed";
             $output['success'] = false;
             $output['error_no'] = $connection->errno;
             $output['error_msg'] = $connection->error;
             return $output;
         }
-        $output['progress'][] = "Statement executed";
         /**
          * Creates variables with names given by the strings in $outputKeys. For example:
          * if $outputKeys == ["keyName1", "keyName2", "keyName3"],
@@ -71,7 +67,6 @@
         }
         /** Binds output columns to the resulting output parameters. */
         $preparedStatement->bind_result(...$outputParameters);
-        $output['progress'][] = "Output parameters bound";
         if (!$outputParameters) {
             $output['success'] = false;
             $output['error_no'] = $connection->errno;
@@ -85,7 +80,6 @@
          * then $output['data'][0] == ["keyName1" => "value1", "keyName2" => "value2", "keyName3" => "value3"]
          */
         while($preparedStatement->fetch()) {
-            $output['progress'][] = "Row fetched";
             $output['success'] = true;
             foreach($outputKeys as $index => $key) {
                 $row[$key] = $outputParameters[$index];
@@ -93,7 +87,6 @@
             $output['data'][] = $row;
         }
         if (!empty($preparedStatement->insert_id)) {
-            $output['progress'][] = "Insert id obtained";
             $output['success'] = true;
             $output['insert_id'] = $preparedStatement->insert_id;
         } else if ($output['success'] == null) {
