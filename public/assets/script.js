@@ -636,14 +636,15 @@ function Model() {
 function DatabaseInterface() {
 
     this.readStudentData = function() {
+        var data = {
+            //api_key: "ihCyt8Un6o"
+            api_key: '9s6bvouy3t4roslo937vlosb7lo4tysol4u9tsloye4btlosyl4et8vbs9e4yb9y',
+            request: 'get_all'
+        };
         $.ajax({
             type: "POST",
             dataType: 'json',
-            data: {
-                //api_key: "ihCyt8Un6o"
-                api_key: '9s6bvouy3t4roslo937vlosb7lo4tysol4u9tsloye4btlosyl4et8vbs9e4yb9y',
-                request: 'get_all'
-            },
+            data: data,
             //url: 'http://s-apis.learningfuze.com/sgt/get',
             url: 'api/request.php',
             success: function (result) {

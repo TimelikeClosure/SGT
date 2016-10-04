@@ -1,5 +1,6 @@
 <?php
     $INTERNAL_LOAD = true;
+    define('RESOURCES', '../../resources/');
     //  Create skeleton output array
     $output = [
         'data' => [],
@@ -66,7 +67,7 @@
          * then $outputParameters == [$keyName1, $keyName2, $keyName3].
          */
         foreach($outputKeys as $keyString) {
-            $outputParameters[] = $$keyString;
+            $outputParameters[] = $keyString;
         }
         /** Binds output columns to the resulting output parameters. */
         $preparedStatement->bind_result(...$outputParameters);
@@ -111,7 +112,7 @@
         returnError($output, "Access Denied");
     }
     //  Initiate connection with database
-    require_once('../../resources/config.php');
+    require_once(RESOURCES.'config.php');
     if ($conn->connect_errno) {
         returnError($output, "Failed to connect to database: {$conn->connect_errno}: {$conn->connect_error}");
     }
@@ -119,13 +120,14 @@
     $request = filter_var($_POST['request'], FILTER_VALIDATE_REGEXP, ['options'=>['regexp'=>'/^(?:get_all|insert_row|delete_row)$/']]);
     switch ($request) {
         case 'get_all':
-            require('../../resources/api/get_all.php');
+            require(RESOURCES.'api/get_all.php');
             break;
         case 'insert_row':
-            require('../../resources/api/insert_row.php');
+
+            require(RESOURCES.'api/insert_row.php');
             break;
         case 'delete_row':
-            require('../../resources/api/delete_row.php');
+            require(RESOURCES.'api/delete_row.php');
             break;
         default:
             returnError($output, "Bad Request");
