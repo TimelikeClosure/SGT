@@ -111,7 +111,7 @@
         returnError($output, "Access Denied");
     }
     //  Initiate connection with database
-    require_once('connection.php');
+    require_once('../../resources/config.php');
     if ($conn->connect_errno) {
         returnError($output, "Failed to connect to database: {$conn->connect_errno}: {$conn->connect_error}");
     }
@@ -119,13 +119,13 @@
     $request = filter_var($_POST['request'], FILTER_VALIDATE_REGEXP, ['options'=>['regexp'=>'/^(?:get_all|insert_row|delete_row)$/']]);
     switch ($request) {
         case 'get_all':
-            require('get_all.php');
+            require('../../resources/api/get_all.php');
             break;
         case 'insert_row':
-            require('insert_row.php');
+            require('../../resources/api/insert_row.php');
             break;
         case 'delete_row':
-            require('delete_row.php');
+            require('../../resources/api/delete_row.php');
             break;
         default:
             returnError($output, "Bad Request");

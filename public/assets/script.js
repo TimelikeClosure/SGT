@@ -645,7 +645,7 @@ function DatabaseInterface() {
                 request: 'get_all'
             },
             //url: 'http://s-apis.learningfuze.com/sgt/get',
-            url: 'server_requests/request.php',
+            url: 'api/request.php',
             success: function (result) {
                 console.log(result);
                 for (var i in result.data) {
@@ -677,7 +677,7 @@ function DatabaseInterface() {
                 grade: studentObj.grade
             },
             //url: 'http://s-apis.learningfuze.com/sgt/create',
-            url: 'server_requests/request.php',
+            url: 'api/request.php',
             success: function (result) {
                 console.log(result);
                 studentObj.id = result.new_id;
@@ -704,7 +704,7 @@ function DatabaseInterface() {
                  "force-failure": "request"*/
             },
             url: 'http://s-apis.learningfuze.com/sgt/delete',
-            //url: 'server_requests/request.php',
+            //url: 'api/request.php',
             success: function(response) {
                 if (response.success) {
                     student.delete_self(successCallback);
