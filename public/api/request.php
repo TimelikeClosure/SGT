@@ -1,5 +1,7 @@
 <?php
     $INTERNAL_LOAD = true;
+    define('RESOURCES', '../../resources/');
+    //require_once(RESOURCES . 'modules.php');
     //  Create skeleton output array
     $output = [
         'data' => [],
@@ -33,7 +35,6 @@
         $output['success'] = null;
         /** Sends the prepared statement, before any input parameters are inserted, to the server. */
         $preparedStatement = $connection->prepare($queryString);
-        $output['progress'][] = "Statement sent";
         if (!$preparedStatement) {
             $output['success'] = false;
             $output['error_no'] = $connection->errno;
@@ -43,7 +44,6 @@
         /** Binds input parameters to the prepared statement, if provided. */
         if (!empty($inputParameters)) {
             $status = $preparedStatement->bind_param(...$inputParameters);
-            $output['progress'][] = "Input parameters bound";
             if (!$status) {
                 $output['success'] = false;
                 $output['error_no'] = $connection->errno;
@@ -53,29 +53,28 @@
         }
         /** Sends the input parameters to the server to be inserted into the previously sent statement. */
         if (!$preparedStatement->execute()) {
-            $output['progress'][] = "Statement executed";
             $output['success'] = false;
             $output['error_no'] = $connection->errno;
             $output['error_msg'] = $connection->error;
             return $output;
         }
-        $output['progress'][] = "Statement executed";
         /**
          * Creates variables with names given by the strings in $outputKeys. For example:
          * if $outputKeys == ["keyName1", "keyName2", "keyName3"],
          * then $outputParameters == [$keyName1, $keyName2, $keyName3].
          */
-        foreach($outputKeys as $keyString) {
-            $outputParameters[] = $$keyString;
-        }
-        /** Binds output columns to the resulting output parameters. */
-        $preparedStatement->bind_result(...$outputParameters);
-        $output['progress'][] = "Output parameters bound";
-        if (!$outputParameters) {
-            $output['success'] = false;
-            $output['error_no'] = $connection->errno;
-            $output['error_msg'] = $connection->error;
-            return $output;
+        if (count($outputKeys) > 0){
+            foreach($outputKeys as $keyString) {
+                $outputParameters[] = $keyString;
+            }
+            /** Binds output columns to the resulting output parameters. */
+            $preparedStatement->bind_result(...$outputParameters);
+            if (!$outputParameters) {
+                $output['success'] = false;
+                $output['error_no'] = $connection->errno;
+                $output['error_msg'] = $connection->error;
+                return $output;
+            }
         }
         /**
          * Fetches all rows and stores them for output. For example:
@@ -84,7 +83,6 @@
          * then $output['data'][0] == ["keyName1" => "value1", "keyName2" => "value2", "keyName3" => "value3"]
          */
         while($preparedStatement->fetch()) {
-            $output['progress'][] = "Row fetched";
             $output['success'] = true;
             foreach($outputKeys as $index => $key) {
                 $row[$key] = $outputParameters[$index];
@@ -92,9 +90,8 @@
             $output['data'][] = $row;
         }
         if (!empty($preparedStatement->insert_id)) {
-            $output['progress'][] = "Insert id obtained";
             $output['success'] = true;
-            $output['insert_id'] = $preparedStatement->insert_id;
+            $output['data']['id'] = $preparedStatement->insert_id;
         } else if ($output['success'] == null) {
             $output['success'] = false;
             $output['error_no'] = null;
@@ -111,7 +108,7 @@
         returnError($output, "Access Denied");
     }
     //  Initiate connection with database
-    require_once('connection.php');
+    require_once(RESOURCES.'config.php');
     if ($conn->connect_errno) {
         returnError($output, "Failed to connect to database: {$conn->connect_errno}: {$conn->connect_error}");
     }
@@ -119,13 +116,14 @@
     $request = filter_var($_POST['request'], FILTER_VALIDATE_REGEXP, ['options'=>['regexp'=>'/^(?:get_all|insert_row|delete_row)$/']]);
     switch ($request) {
         case 'get_all':
-            require('get_all.php');
+            require(RESOURCES.'api/get_all.php');
             break;
         case 'insert_row':
-            require('insert_row.php');
+
+            require(RESOURCES.'api/insert_row.php');
             break;
         case 'delete_row':
-            require('delete_row.php');
+            require(RESOURCES.'api/delete_row.php');
             break;
         default:
             returnError($output, "Bad Request");
