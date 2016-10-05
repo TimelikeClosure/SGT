@@ -281,17 +281,17 @@ function View() {
         console.log("This should display to the window:", errorMessage);
     };
 
-    this.buttonSpinner = function(area) {
+    this.buttonSpinner = function(element) {
         var span = $('<span>', {
             class: "glyphicon glyphicon-refresh spinning"
         });
-        area.prepend(span);
-        area.attr('disabled', 'disabled');
+        element.prepend(span);
+        element.attr('disabled', 'disabled');
     };
 
-    this.stopSpinner = function(area) {
-        area.children('span').detach();
-        area.removeAttr('disabled');
+    this.stopSpinner = function(element) {
+        element.children('span').detach();
+        element.removeAttr('disabled');
     };
 
     /**
@@ -636,18 +636,16 @@ function Model() {
 function DatabaseInterface() {
 
     this.readStudentData = function() {
+        var data = {
+            api_key: '9s6bvouy3t4roslo937vlosb7lo4tysol4u9tsloye4btlosyl4et8vbs9e4yb9y',
+            request: 'get_all'
+        };
         $.ajax({
             type: "POST",
             dataType: 'json',
-            data: {
-                //api_key: "ihCyt8Un6o"
-                api_key: '9s6bvouy3t4roslo937vlosb7lo4tysol4u9tsloye4btlosyl4et8vbs9e4yb9y',
-                request: 'get_all'
-            },
-            //url: 'http://s-apis.learningfuze.com/sgt/get',
-            url: 'server_requests/request.php',
+            data: data,
+            url: 'api/request.php',
             success: function (result) {
-                console.log(result);
                 for (var i in result.data) {
                     if (result.data[i].hasOwnProperty('name') && result.data[i].hasOwnProperty('course') && result.data[i].hasOwnProperty('grade') && result.data[i].hasOwnProperty('id')) {
                         model.addStudent(result.data[i].name, result.data[i].course, result.data[i].grade, result.data[i].id);
@@ -657,7 +655,6 @@ function DatabaseInterface() {
                 view.stopSpinner($('#getStudentData'));
             },
             error: function(response) {
-                console.log(response);
                 view.stopSpinner($('#getStudentData'));
             }
         });
@@ -669,26 +666,21 @@ function DatabaseInterface() {
             type: "POST",
             dataType: 'json',
             data: {
-                //api_key: "ihCyt8Un6o",
                 api_key: '9s6bvouy3t4roslo937vlosb7lo4tysol4u9tsloye4btlosyl4et8vbs9e4yb9y',
                 request: 'insert_row',
                 name: studentObj.name,
                 course: studentObj.course,
                 grade: studentObj.grade
             },
-            //url: 'http://s-apis.learningfuze.com/sgt/create',
-            url: 'server_requests/request.php',
+            url: 'api/request.php',
             success: function (result) {
-                console.log(result);
-                studentObj.id = result.new_id;
+                studentObj.id = result.data.id;
                 view.clearAddStudentForm();
                 view.updateView();
                 view.stopSpinner($('#add'));
-                console.log(studentObj);
             },
             error: function (result) {
                 view.stopSpinner($('#add'));
-                console.log(result);
             }
         });
     };
@@ -698,13 +690,11 @@ function DatabaseInterface() {
             type: "POST",
             dataType: 'json',
             data: {
-                api_key: "ihCyt8Un6o",
+                api_key: '9s6bvouy3t4roslo937vlosb7lo4tysol4u9tsloye4btlosyl4et8vbs9e4yb9y',
                 request: 'delete_row',
-                student_id: student.id/*,
-                 "force-failure": "request"*/
+                student_id: student.id
             },
-            url: 'http://s-apis.learningfuze.com/sgt/delete',
-            //url: 'server_requests/request.php',
+            url: 'api/request.php',
             success: function(response) {
                 if (response.success) {
                     student.delete_self(successCallback);
