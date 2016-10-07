@@ -101,6 +101,10 @@
         $preparedStatement->close();
         return $output;
     }
+    
+    if ($_SERVER['CONTENT_TYPE'] == 'application/json'){
+        $_POST = json_decode(file_get_contents('php://input'), true);
+    }
 
     //  Check for valid API Key characters & length
     $apiKey = filter_var($_POST['api_key'], FILTER_VALIDATE_REGEXP, ['options'=>['regexp'=>'/^[a-z0-9]{64}$/i']]);

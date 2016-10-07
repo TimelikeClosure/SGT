@@ -643,7 +643,8 @@ function DatabaseInterface() {
         $.ajax({
             type: "POST",
             dataType: 'json',
-            data: data,
+            headers: {'Content-Type': 'application/json'},
+            data: JSON.stringify(data),
             url: 'api/request.php',
             success: function (result) {
                 for (var i in result.data) {
@@ -655,6 +656,7 @@ function DatabaseInterface() {
                 view.stopSpinner($('#getStudentData'));
             },
             error: function(response) {
+                return console.log(response);
                 view.stopSpinner($('#getStudentData'));
             }
         });
@@ -665,13 +667,14 @@ function DatabaseInterface() {
         $.ajax({
             type: "POST",
             dataType: 'json',
-            data: {
+            headers: {'Content-Type': 'application/json'},
+            data: JSON.stringify({
                 api_key: '9s6bvouy3t4roslo937vlosb7lo4tysol4u9tsloye4btlosyl4et8vbs9e4yb9y',
                 request: 'insert_row',
                 name: studentObj.name,
                 course: studentObj.course,
                 grade: studentObj.grade
-            },
+            }),
             url: 'api/request.php',
             success: function (result) {
                 studentObj.id = result.data.id;
@@ -689,11 +692,12 @@ function DatabaseInterface() {
         $.ajax({
             type: "POST",
             dataType: 'json',
-            data: {
+            headers: {'Content-Type': 'application/json'},
+            data: JSON.stringify({
                 api_key: '9s6bvouy3t4roslo937vlosb7lo4tysol4u9tsloye4btlosyl4et8vbs9e4yb9y',
                 request: 'delete_row',
                 student_id: student.id
-            },
+            }),
             url: 'api/request.php',
             success: function(response) {
                 if (response.success) {
