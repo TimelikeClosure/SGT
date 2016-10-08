@@ -1,0 +1,3 @@
+sgt.controller('gradeQuickSearchForm', [function(){
+
+}]);

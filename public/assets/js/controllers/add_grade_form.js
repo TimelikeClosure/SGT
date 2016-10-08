@@ -1,0 +1,3 @@
+sgt.controller('addGradeForm', [function(){
+
+}]);
