@@ -1,6 +1,6 @@
 sgt.provider('httpRequestGenerator', ['$http', function($http){
 
-    this.baseUrl = '//api/';
+    this.baseUrl = '/';
 
     this.$get = [function(){
         return {
@@ -21,4 +21,8 @@ sgt.provider('httpRequestGenerator', ['$http', function($http){
             }
         }
     }];
+}]);
+
+sgt.config(['httpRequestGenerator', function (httpRequestGenerator){
+    httpRequestGenerator.baseUrl = '/api/';
 }]);
