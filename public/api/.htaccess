@@ -1,0 +1,13 @@
+RewriteEngine On
+
+#   /api/grades
+
+RewriteRule ^grades$ reflect.php?content=grades&page=1 [QSA]
+
+#   /api/grades/page/#  - (page #)
+
+RewriteRule ^grades/page/([1-9][0-9]*)$ reflect.php?content=grades&page=$1 [QSA]
+
+#   /api/grades/#  - (id #)
+
+RewriteRule ^grades/([0-9]+)$ reflect.php?content=grades&id=$1

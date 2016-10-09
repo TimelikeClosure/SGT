@@ -102,12 +102,17 @@
         return $output;
     }
     
-    if ($_SERVER['CONTENT_TYPE'] == 'application/json'){
+    //  If body is encoded in JSON, decode and write to $_POST
+    if (!empty($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'application/json'){
         $_POST = json_decode(file_get_contents('php://input'), true);
     }
 
     //  Check for valid API Key characters & length
-    $apiKey = filter_var($_POST['api_key'], FILTER_VALIDATE_REGEXP, ['options'=>['regexp'=>'/^[a-z0-9]{64}$/i']]);
+    $apiKey = filter_var(
+        empty($_POST['api_key']) ? null : $_POST['api_key'],
+        FILTER_VALIDATE_REGEXP,
+        ['options'=>['regexp'=>'/^[a-z0-9]{64}$/i']]
+    );
     if ($apiKey === null || $apiKey === false) {
         returnError($output, "Access Denied");
     }
