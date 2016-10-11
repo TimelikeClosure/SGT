@@ -645,7 +645,7 @@ function DatabaseInterface() {
             dataType: 'json',
             headers: {'Content-Type': 'application/json'},
             data: JSON.stringify(data),
-            url: 'api/request.php',
+            url: 'api/grades',
             success: function (result) {
                 for (var i in result.data) {
                     if (result.data[i].hasOwnProperty('name') && result.data[i].hasOwnProperty('course') && result.data[i].hasOwnProperty('grade') && result.data[i].hasOwnProperty('id')) {
@@ -675,7 +675,7 @@ function DatabaseInterface() {
                 course: studentObj.course,
                 grade: studentObj.grade
             }),
-            url: 'api/request.php',
+            url: 'api/grades',
             success: function (result) {
                 studentObj.id = result.data.id;
                 view.clearAddStudentForm();
@@ -698,7 +698,7 @@ function DatabaseInterface() {
                 request: 'delete_row',
                 student_id: student.id
             }),
-            url: 'api/request.php',
+            url: 'api/grades/' + student.id,
             success: function(response) {
                 if (response.success) {
                     student.delete_self(successCallback);

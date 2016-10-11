@@ -2,11 +2,6 @@
     $INTERNAL_LOAD = true;
     define('RESOURCES', '../../resources/');
     //require_once(RESOURCES . 'modules.php');
-    //  Create skeleton output array
-    $output = [
-        'data' => [],
-        'success' => null
-    ];
     /**
      * returnError - Returns an error through JSON with the given error message.
      * @param {Array} $output - associative array to use for conveying error.
@@ -102,39 +97,22 @@
         return $output;
     }
     
-    //  If body is encoded in JSON, decode and write to $_POST
-    if (!empty($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'application/json'){
-        $_POST = json_decode(file_get_contents('php://input'), true);
+    //  Check body MIME type and re-write $_POST as necessary
+    if (!empty($_SERVER['CONTENT_TYPE'])){
+        switch ($_SERVER['CONTENT_TYPE']){
+            case 'application/json':    //  Body is encoded in JSON
+                $_POST = json_decode(file_get_contents('php://input'), true);
+                break;
+            case 'application/x-www-form-urlencoded':   //  Body is url-encoded
+                break;
+            default:
+                break;
+        }
     }
 
-    //  Check for valid API Key characters & length
-    $apiKey = filter_var(
-        empty($_POST['api_key']) ? null : $_POST['api_key'],
-        FILTER_VALIDATE_REGEXP,
-        ['options'=>['regexp'=>'/^[a-z0-9]{64}$/i']]
-    );
-    if ($apiKey === null || $apiKey === false) {
-        returnError($output, "Access Denied");
-    }
     //  Initiate connection with database
     require_once(RESOURCES.'config.php');
-    if ($conn->connect_errno) {
-        returnError($output, "Failed to connect to database: {$conn->connect_errno}: {$conn->connect_error}");
-    }
-    //  Check for valid request characters & length
-    $request = filter_var($_POST['request'], FILTER_VALIDATE_REGEXP, ['options'=>['regexp'=>'/^(?:get_all|insert_row|delete_row)$/']]);
-    switch ($request) {
-        case 'get_all':
-            require(RESOURCES.'api/get_all.php');
-            break;
-        case 'insert_row':
-
-            require(RESOURCES.'api/insert_row.php');
-            break;
-        case 'delete_row':
-            require(RESOURCES.'api/delete_row.php');
-            break;
-        default:
-            returnError($output, "Bad Request");
-    }
+    
+    require(RESOURCES.'api/index.php');
+    
 ?>
