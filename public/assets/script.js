@@ -636,17 +636,12 @@ function Model() {
 function DatabaseInterface() {
 
     this.readStudentData = function() {
-        var data = {
-            api_key: '9s6bvouy3t4roslo937vlosb7lo4tysol4u9tsloye4btlosyl4et8vbs9e4yb9y',
-            request: 'get_all'
-        };
         $.ajax({
-            type: "POST",
+            type: "GET",
             dataType: 'json',
-            headers: {'Content-Type': 'application/json'},
-            data: JSON.stringify(data),
             url: 'api/grades',
             success: function (result) {
+                console.log(result);
                 for (var i in result.data) {
                     if (result.data[i].hasOwnProperty('name') && result.data[i].hasOwnProperty('course') && result.data[i].hasOwnProperty('grade') && result.data[i].hasOwnProperty('id')) {
                         model.addStudent(result.data[i].name, result.data[i].course, result.data[i].grade, result.data[i].id);
@@ -656,7 +651,7 @@ function DatabaseInterface() {
                 view.stopSpinner($('#getStudentData'));
             },
             error: function(response) {
-                return console.log(response);
+                console.log(response);
                 view.stopSpinner($('#getStudentData'));
             }
         });
@@ -670,7 +665,6 @@ function DatabaseInterface() {
             headers: {'Content-Type': 'application/json'},
             data: JSON.stringify({
                 api_key: '9s6bvouy3t4roslo937vlosb7lo4tysol4u9tsloye4btlosyl4et8vbs9e4yb9y',
-                request: 'insert_row',
                 name: studentObj.name,
                 course: studentObj.course,
                 grade: studentObj.grade
@@ -690,14 +684,8 @@ function DatabaseInterface() {
 
     this.deleteStudentData = function(student, successCallback, failCallback) {
         $.ajax({
-            type: "POST",
+            type: "DELETE",
             dataType: 'json',
-            headers: {'Content-Type': 'application/json'},
-            data: JSON.stringify({
-                api_key: '9s6bvouy3t4roslo937vlosb7lo4tysol4u9tsloye4btlosyl4et8vbs9e4yb9y',
-                request: 'delete_row',
-                student_id: student.id
-            }),
             url: 'api/grades/' + student.id,
             success: function(response) {
                 if (response.success) {

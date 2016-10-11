@@ -1,13 +1,4 @@
 RewriteEngine On
 
-#   /api/grades
-
-RewriteRule ^grades$ request.php?content=grades&page=1 [QSA]
-
-#   /api/grades/page/#  - (page #)
-
-RewriteRule ^grades/page/([1-9][0-9]*)$ request.php?content=grades&page=$1 [QSA]
-
-#   /api/grades/#  - (id #)
-
-RewriteRule ^grades/(0|[1-9][0-9]*)$ request.php?content=grades&id=$1
+#   Route all api calls through request.php
+RewriteRule ^.*$ request.php [QSA]

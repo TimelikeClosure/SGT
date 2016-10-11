@@ -113,6 +113,14 @@
     //  Initiate connection with database
     require_once(RESOURCES.'config.php');
     
+    //  Break REQUEST_URI into array of sub-folders, then remove everything up through 'api/'
+    $requestUriArray = explode('/', $_SERVER['REQUEST_URI']);
+    while ($requestUriArray[0] !== 'api' && count($requestUriArray) > 0){   //  shift off everything before 'api/'
+        array_shift($requestUriArray);
+    }
+    array_shift($requestUriArray);  //  shift off 'api/'
+    
+    //  Re-route request to '/resources/api' index
     require(RESOURCES.'api/index.php');
     
 ?>
