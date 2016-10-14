@@ -1,9 +1,4 @@
 <?php
-    if (empty($INTERNAL_LOAD) || $INTERNAL_LOAD !== true) {
-        http_response_code(403);
-        exit();
-    }
-
     
     $studentName = filter_var(
         empty($_POST['name']) ? false : $_POST['name'],

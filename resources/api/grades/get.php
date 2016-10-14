@@ -1,8 +1,4 @@
 <?php
-    if (empty($INTERNAL_LOAD) || $INTERNAL_LOAD !== true) {
-        http_response_code(403);
-        exit();
-    }
     
     $page = intval(array_shift($requestUriArray));
     if ($page < 1){$page = 1;}

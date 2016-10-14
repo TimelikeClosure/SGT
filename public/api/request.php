@@ -1,5 +1,5 @@
 <?php
-    $INTERNAL_LOAD = true;
+    
     define('RESOURCES', '../../resources/');
     //require_once(RESOURCES . 'modules.php');
     /**
