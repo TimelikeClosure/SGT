@@ -1,18 +1,26 @@
 <?php
-    if (empty($INTERNAL_LOAD) || $INTERNAL_LOAD !== true) {
-        http_response_code(403);
-        exit();
-    }
-
-    $studentName = filter_var($_POST['name'], FILTER_VALIDATE_REGEXP, ['options'=>['regexp'=>'/^[A-Za-z -]+$/']]);
+    
+    $studentName = filter_var(
+        empty($_POST['name']) ? false : $_POST['name'],
+        FILTER_VALIDATE_REGEXP,
+        ['options'=>['regexp'=>'/^[A-Za-z -]+$/']]
+    );
     if (empty($studentName)) {
         returnError($output, 'Invalid student name');
     }
-    $studentCourse = filter_var($_POST['course'], FILTER_VALIDATE_REGEXP, ['options'=>['regexp'=>'/[\w -]+$/']]);
+    $studentCourse = filter_var(
+        empty($_POST['course']) ? false : $_POST['course'],
+        FILTER_VALIDATE_REGEXP,
+        ['options'=>['regexp'=>'/[\w -]+$/']]
+    );
     if (empty($studentCourse)) {
         returnError($output, 'Invalid course');
     }
-    $studentGrade = filter_var($_POST['grade'], FILTER_VALIDATE_REGEXP, ['options'=>['regexp'=>'/^(?:100(?:\.(?:0))?|[0-9]{1,2}(?:\.(?:[0-9])?)?)$/']]);
+    $studentGrade = filter_var(
+        empty($_POST['grade']) ? false : $_POST['grade'],
+        FILTER_VALIDATE_REGEXP,
+        ['options'=>['regexp'=>'/^(?:100(?:\.(?:0))?|[0-9]{1,2}(?:\.(?:[0-9])?)?)$/']]
+    );
     if (empty($studentGrade)) {
         returnError($output, 'Invalid student grade');
     }
