@@ -1,14 +1,23 @@
 <!doctype html>
-<html>
+<html ng-app="studentGradeTable">
     <!--Begin page head-->
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="initial-scale=1, user-scalable=no">
+        <!--Stylesheets-->
         <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
         <link rel="stylesheet" href="assets/css/style.css">
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-        <script src="assets/js/script.js"></script>
+        <!--Scripts-->
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.js"></script>
+        <script src="assets/js/app.js"></script>
+        <script src="assets/js/services/server_interface.js"></script>
+        <script src="assets/js/services/grade_cache.js"></script>
+        <script src="assets/js/services/grade_record_paging.js"></script>
+        <script src="assets/js/controllers/add_grade_form.js"></script>
+        <script src="assets/js/controllers/grade_average.js"></script>
+        <script src="assets/js/controllers/grade_quick_search_form.js"></script>
+        <script src="assets/js/controllers/grade_table.js"></script>
+
     </head>
     <!--End page head-->
 
@@ -43,9 +52,7 @@
                         <span id="autothis" class="glyphicon glyphicon-list-alt"></span>
                     </span>
                     <input type="text" class="form-control" name="course" id="course"
-                           placeholder="Student Course" onkeyup="controller.studentCourseAutoFillShowTimer();"
-                           onfocus="controller.studentCourseAutoFillShowTimer();"
-                           onblur="controller.studentCourseAutoFillHideTimer();" data-toggle="popover" data-placement="left"
+                           placeholder="Student Course" data-toggle="popover" data-placement="left"
                            required pattern="^[\w -]+$">
                 </div>
                 <div class="input-group form-group">
@@ -55,9 +62,9 @@
                     <input type="number" min="0" max="100" class="form-control" name="studentGrade" id="studentGrade"
                            placeholder="Student Grade" data-toggle="popover" data-placement="left" required pattern="^(?:100(?:\.(?:0))?|[0-9]{1,2}(?:\.(?:[0-9])?)?)$">
                 </div>
-                <button type="button" id="success" class="btn btn-success" onclick="controller.addClicked();">Add</button>
-                <button type="button" id="cancel" class="btn btn-default" onclick="controller.cancelClicked();">Cancel</button>
-                <button type="button" id="getStudentData" class="btn btn-info" onclick="controller.getDataClicked();">Get Student Data</button>
+                <button type="button" id="success" class="btn btn-success">Add</button>
+                <button type="button" id="cancel" class="btn btn-default">Cancel</button>
+                <button type="button" id="getStudentData" class="btn btn-info">Get Student Data</button>
                 <div class="error-container"></div>
             </form>
             <!--End add student section-->
@@ -70,20 +77,28 @@
                         <span class="glyphicon glyphicon-search"></span>
                     </span>
                         <input type="search" class="form-control" name="tableFilter" id="tableFilter" placeholder="Quick Search"
-                               data-toggle="popover" data-placement="left" onkeyup="controller.filterStudentTableTimer();">
+                               data-toggle="popover" data-placement="left">
                     </div>
                 </div>
-                <table class="student-list table">
+                <table class="student-list table" ng-controller="gradeRecordTable as grt">
                     <thead>
                         <tr>
                             <th>Student Name</th>
-                            <th>Student Course</th>
-                            <th>Student Grade</th>
+                            <th>Course</th>
+                            <th>Final Grade</th>
                             <th>Operations</th>
                         </tr>
                     </thead>
-                    <tbody>
-
+                    <tbody ng-repeat="gradeRecord in grt.gradeRecords()">
+                        <tr>
+                            <td>{{gradeRecord.name}}</td>
+                            <td>{{gradeRecord.course}}</td>
+                            <td>{{gradeRecord.grade}}</td>
+                            <td>
+                                <button type="button" class="btn btn-warning btn-xs" ng-click="grt.editRecord($index)">Edit</button>
+                                <button type="button" class="btn btn-danger btn-xs" ng-click="grt.deleteRecord($index)">Delete</button>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </section>
