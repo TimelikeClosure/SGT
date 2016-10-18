@@ -27,10 +27,11 @@ sgt.factory('gradeCache', ['$q', 'serverInterface', function($q, serverInterface
                 } else {
                     serverInterface.getGradeById(id)
                         .then(function(response){
+                            var record = response.grades.records[id];
                             grades[id] = {
-                                name: response.name,
-                                course: response.course,
-                                grade: parseFloat(response.grade)
+                                name: record.name,
+                                course: record.course,
+                                grade: parseFloat(record.grade)
                             };
                             recordPromise.resolve(grades[id]);
                         }, function(response){

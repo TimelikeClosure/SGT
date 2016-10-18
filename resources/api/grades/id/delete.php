@@ -1,10 +1,10 @@
 <?php
     
-    $REQUEST['data'] = [
+    $RESPONSE['data'] = [
         'message' => 'You tried to delete something!',
         'id' => $gradeId,
         '$_SERVER' => $_SERVER
     ];
-    $REQUEST['success'] = true;
+    $RESPONSE['success'] = true;
     
 ?>

@@ -1,15 +1,17 @@
 <?php
     
-    $response = preparedStatement($conn, 'SELECT course_name, grade, student_name FROM grade_table WHERE id=(?)', ['i', $gradeId], ['course', 'grade', 'name']);
+    $dbOutputKeys = ['name', 'course', 'grade'];
+    
+    $response = preparedStatement($conn, 'SELECT student_name, course_name, grade FROM grade_table WHERE id=(?)', ['i', $gradeId], $dbOutputKeys);
     
     if (empty($response['success'])) {
         returnError($response['error_msg']);
     }
     $record = [];
-    foreach($response as $key => $value) {
-        $record[$key] = $value;
+    for ($i = 0; $i < count($dbOutputKeys); $i++){
+        $record[$dbOutputKeys[$i]] = $response['data'][0][$dbOutputKeys[$i]];
     }
     //  Output to client
-    $REQUEST['data'] = ['grades' => ['records' => [$gradeId => $record]]];
-    $REQUEST['success'] = true;
+    $RESPONSE['data'] = ['grades' => ['records' => [$gradeId => $record]]];
+    $RESPONSE['success'] = true;
 ?>

@@ -11,8 +11,9 @@ sgt.factory('serverInterface', ['$q', '$http', function($q, $http){
             $http.get(url).then(function(response){
                 if (response.hasOwnProperty('data') &&
                     response.data.hasOwnProperty('success') &&
-                    response.data.success){
-                    result.resolve(response.data.data[0]);
+                    response.data.success &&
+                    response.data.hasOwnProperty('data')){
+                    result.resolve(response.data.data);
                 } else {
                     result.reject(response);
                 }
