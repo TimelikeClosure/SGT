@@ -6,7 +6,7 @@
         ['options'=>['regexp'=>'/^[A-Za-z -]+$/']]
     );
     if (empty($studentName)) {
-        returnError($output, 'Invalid student name');
+        returnError('Invalid student name');
     }
     $studentCourse = filter_var(
         empty($_POST['course']) ? false : $_POST['course'],
@@ -14,7 +14,7 @@
         ['options'=>['regexp'=>'/[\w -]+$/']]
     );
     if (empty($studentCourse)) {
-        returnError($output, 'Invalid course');
+        returnError('Invalid course');
     }
     $studentGrade = filter_var(
         empty($_POST['grade']) ? false : $_POST['grade'],
@@ -22,16 +22,16 @@
         ['options'=>['regexp'=>'/^(?:100(?:\.(?:0))?|[0-9]{1,2}(?:\.(?:[0-9])?)?)$/']]
     );
     if (empty($studentGrade)) {
-        returnError($output, 'Invalid student grade');
+        returnError('Invalid student grade');
     }
     //  Get rows from database that match api_key
     $response = preparedStatement($conn, 'SELECT id, insert_own FROM user_table WHERE api_key=(?)', ['s', $apiKey], ['userId', 'insertOwn']);
     if (empty($response['success'])) {
-        returnError($output, $response['error_msg']);
+        returnError($response['error_msg']);
     }
     //  If set of rows returned is empty or no insert permissions, throw access denied error
     if (empty($response['data'][0]['insertOwn'])) {
-        returnError($output, 'Access Denied');
+        returnError('Access Denied');
     }
     //  Else get all available grades from the database
     $response = preparedStatement($conn,
@@ -41,13 +41,14 @@
     );
 
     if (!empty($response['error_msg'])) {
-        returnError($output, $response['error_msg']);
+        returnError($response['error_msg']);
     }
+    $records = [];
     foreach($response as $key => $value) {
-        $output[$key] = $value;
+        $records[$key] = $value;
     }
     //  Output to client
-    $output['success'] = true;
-    print(json_encode($output));
+    $RESPONSE['data'] = ['data' => ['grades' => ['records' => $records]]];
+    $RESPONSE['success'] = true;
 
 ?>

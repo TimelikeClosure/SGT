@@ -1,11 +1,5 @@
 <?php
     
-    //  Create skeleton output array
-    $output = [
-        'data' => [],
-        'success' => null
-    ];
-    
     //  Re-route request based upon requested resource and method
     $requestSubDir = array_shift($requestUriArray);
     
@@ -15,7 +9,7 @@
             break;
         case null:  //  'api'
         default:
-            returnError($output, "Bad Request, invalid content");
+            returnError("Bad Request, invalid content");
     }
     
 ?>

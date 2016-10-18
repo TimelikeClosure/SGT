@@ -7,10 +7,11 @@
      * @param {Array} $output - associative array to use for conveying error.
      * @param {string} $errorMessage - error message.
      */
-    function returnError($output, $errorMessage) {
-        $output['success'] = false;
-        $output['error_msg'] = $errorMessage;
-        print(json_encode($output));
+    function returnError($errorMessage) {
+        $RESPONSE = $GLOBALS['RESPONSE'];
+        $RESPONSE['success'] = false;
+        $RESPONSE['messages'][] = $errorMessage;
+        print(json_encode($RESPONSE));
         exit();
     }
     /**
@@ -120,7 +121,17 @@
     }
     array_shift($requestUriArray);  //  shift off 'api/'
     
+    //  Initialize response object
+    $RESPONSE = [
+        'success' => null,
+        'messages' => [],
+        'data' => []
+    ];
+    
     //  Re-route request to '/resources/api' index
     require(RESOURCES.'api/index.php');
+    
+    //  Send response object
+    echo json_encode($RESPONSE);
     
 ?>

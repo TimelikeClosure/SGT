@@ -17,30 +17,30 @@
                     require('get.php');
                     break;
                 case 'POST':
-                    if ($apiKey === null || $apiKey === false) {returnError($output, "Access Denied");}
+                    if ($apiKey === null || $apiKey === false) {returnError("Access Denied");}
                     require('post.php');
                     break;
                 default:
-                    returnError($output, "Bad Request, case null, bad method");
+                    returnError("Bad Request, case null, bad method");
             }
             break;
         case 'page':    //  'api/grades/page'
             switch($_SERVER['REQUEST_METHOD']){
                 case 'GET':
                     if (empty($requestUriArray[0]) || $requestUriArray[0] !== strval(intval($requestUriArray[0]))){
-                        returnError($output, "Bad Request, /page specified without valid page number");
+                        returnError("Bad Request, /page specified without valid page number");
                     }
                     require('get.php');
                     break;
                 default:
-                    returnError($output, "Bad Request, case page, bad method");
+                    returnError("Bad Request, case page, bad method");
             }
             break;
         case preg_match('/^(?:0|[1-9][0-9]*)?/', $requestSubDir) ? $requestSubDir : !$requestSubDir:    //  'api/grades/:id'
             require('id/index.php');
             break;
         default:
-            returnError($output, "Bad Request, no match");
+            returnError("Bad Request, no match");
     }
     
 ?>

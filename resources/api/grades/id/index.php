@@ -12,18 +12,18 @@
                     require('get.php');
                     break;
                 case 'PUT':
-                    if ($apiKey === null || $apiKey === false) {returnError($output, "Access Denied");}
+                    if ($apiKey === null || $apiKey === false) {returnError("Access Denied");}
                     require('put.php');
                     break;
                 case 'DELETE':
                     require('delete.php');
                     break;
                 default:
-                    returnError($output, "Bad Request, case null, bad method");
+                    returnError("Bad Request, case null, bad method");
             }
             break;
         default:
-            returnError($output, "Bad Request, no match");
+            returnError("Bad Request, no match");
     }
 
 ?>

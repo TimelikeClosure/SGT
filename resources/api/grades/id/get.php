@@ -3,12 +3,13 @@
     $response = preparedStatement($conn, 'SELECT course_name, grade, student_name FROM grade_table WHERE id=(?)', ['i', $gradeId], ['course', 'grade', 'name']);
     
     if (empty($response['success'])) {
-        returnError($output, $response['error_msg']);
+        returnError($response['error_msg']);
     }
+    $record = [];
     foreach($response as $key => $value) {
-        $output[$key] = $value;
+        $record[$key] = $value;
     }
     //  Output to client
-    $output['success'] = true;
-    print(json_encode($output));
+    $REQUEST['data'] = ['grades' => ['records' => [$gradeId => $record]]];
+    $REQUEST['success'] = true;
 ?>
