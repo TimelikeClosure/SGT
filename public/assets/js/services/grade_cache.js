@@ -6,14 +6,25 @@
 /**
  * @name gradeCache
  * @type {angular.factory}
- * @description Angular service which manages the local caching of student grade record details, requesting details from the server when necessary.
+ * @summary Angular service which manages the local caching of student grade record details, requesting details from the server when necessary.
  */
 sgt.factory('gradeCache', ['$q', 'serverInterface', function($q, serverInterface){
     function GradeCache(){
 
+        /**
+         * @name grades
+         * @type {{id: {name: string, course: string, grade: float}}}
+         * @summary Contains the cache of grade record details.
+         */
         var grades = {};
 
-        function recordCached(id){
+        /**
+         * @function useCachedRecord
+         * @param {int} id
+         * @returns {boolean}
+         * @summary Determines whether or not the cached version of the grade record with the given id should be used.
+         */
+        function useCachedRecord(id){
             if (!grades.hasOwnProperty(id)){
                 return false;
             }
@@ -29,13 +40,19 @@ sgt.factory('gradeCache', ['$q', 'serverInterface', function($q, serverInterface
             return true;
         }
 
+        /**
+         * @method recordList
+         * @param {int[]} idList
+         * @returns {Promise}
+         * @summary Attempts to return grade record details for the list of given record ids.
+         */
         this.recordList = function(idList){
             var recordListPromises = idList.map(function(id){
                 var recordPromise = $q.defer();
-                if (recordCached(id)){
+                if (useCachedRecord(id)){
                     recordPromise.resolve(grades[id]);
                 } else {
-                    serverInterface.getGradeById(id)
+                    serverInterface.getGradeDetails(id)
                         .then(function(response){
                             var record = response.grades.records[id];
                             grades[id] = {

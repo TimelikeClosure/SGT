@@ -11,9 +11,20 @@
 sgt.factory('serverInterface', ['$q', '$http', function($q, $http){
     function ServerInterface(){
 
+        /**
+         * @name baseUrl
+         * @type {string}
+         * @summary The base URI for all server API requests
+         */
         var baseUrl = 'api/';
 
-        this.getGradeById = function(id){
+        /**
+         * @method getGradeDetails
+         * @param id
+         * @returns {Promise}
+         * @summary Attempts to return grade record details for the record with the given id.
+         */
+        this.getGradeDetails = function(id){
 
             var result = $q.defer();
             var url = baseUrl + 'grades/' + id;

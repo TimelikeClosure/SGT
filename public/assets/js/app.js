@@ -6,6 +6,6 @@
 /**
  * @name studentGradeTable
  * @type {angular.Module}
- * @description
+ * @summary
  */
 var sgt = angular.module('studentGradeTable', []);

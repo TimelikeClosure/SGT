@@ -6,11 +6,16 @@
 /**
  * @name gradeRecordPaging
  * @type {angular.factory}
- * @description Angular service which maintains filtered, sorted, and paged lists of grade records, obtaining details from the local grade cache as requested and obtaining updated lists from server as necessary.
+ * @summary Angular service which maintains filtered, sorted, and paged lists of grade records, obtaining details from the local grade cache as requested and obtaining updated lists from server as necessary.
  */
 sgt.factory('gradeRecordPaging', ['gradeCache', '$log', function(gradeCache, $log){
     function GradeRecordPaging(){
 
+        /**
+         * @name records
+         * @type {{visible: Array, pages: {1: number[], 2: number[]}}}
+         * @summary Contains the currently visible records, pages, and an ordered cache of ids associated with pages.
+         */
         var records = {
             visible: [],
             pages: {
@@ -19,6 +24,11 @@ sgt.factory('gradeRecordPaging', ['gradeCache', '$log', function(gradeCache, $lo
             }
         };
 
+        /**
+         * @method setVisibleRecords
+         * @param {int[]} pageList
+         * @summary Updates the list of currently visible grade records, given a new list of pages to display.
+         */
         this.setVisibleRecords = function(pageList){
             var ids = pageList.reduce(function(last, current){
                 return last.concat(records.pages[current]);
@@ -28,6 +38,11 @@ sgt.factory('gradeRecordPaging', ['gradeCache', '$log', function(gradeCache, $lo
             });
         };
 
+        /**
+         * @method visibleRecords
+         * @returns {Object[]}
+         * @summary Get list of currently visible grade records with their details.
+         */
         this.visibleRecords = function(){
             return records.visible;
         };
