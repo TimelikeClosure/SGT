@@ -1,3 +1,0 @@
-sgt.controller('gradeAverage', [function(){
-
-}]);

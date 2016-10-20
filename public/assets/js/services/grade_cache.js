@@ -1,3 +1,13 @@
+/**
+ * @file Maintains a local cache of grade record details.
+ * @author Tim Horist Jr.
+ */
+
+/**
+ * @name gradeCache
+ * @type {angular.factory}
+ * @description Angular service which manages the local caching of student grade record details, requesting details from the server when necessary.
+ */
 sgt.factory('gradeCache', ['$q', 'serverInterface', function($q, serverInterface){
     function GradeCache(){
 

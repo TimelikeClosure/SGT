@@ -1,3 +1,13 @@
+/**
+ * @file Maintains filtered, sorted, and paged lists of grade records.
+ * @author Tim Horist Jr.
+ */
+
+/**
+ * @name gradeRecordPaging
+ * @type {angular.factory}
+ * @description Angular service which maintains filtered, sorted, and paged lists of grade records, obtaining details from the local grade cache as requested and obtaining updated lists from server as necessary.
+ */
 sgt.factory('gradeRecordPaging', ['gradeCache', '$log', function(gradeCache, $log){
     function GradeRecordPaging(){
 

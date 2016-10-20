@@ -1,3 +1,13 @@
+/**
+ * @file Creates an interface for interacting with the server's API.
+ * @author Tim Horist Jr.
+ */
+
+/**
+ * @name serverInterface
+ * @type {angular.factory}
+ * @description Angular service which acts as an interface for interacting with the server's API.
+ */
 sgt.factory('serverInterface', ['$q', '$http', function($q, $http){
     function ServerInterface(){
 
