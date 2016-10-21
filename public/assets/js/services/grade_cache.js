@@ -52,7 +52,7 @@ sgt.factory('gradeCache', ['$q', 'serverInterface', function($q, serverInterface
                 if (useCachedRecord(id)){
                     recordPromise.resolve(grades[id]);
                 } else {
-                    serverInterface.getGradeDetails(id)
+                    serverInterface.getGradeRecordDetails(id)
                         .then(function(response){
                             var record = response.grades.records[id];
                             grades[id] = {
