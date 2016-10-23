@@ -15,7 +15,7 @@ sgt.controller('gradeRecordTable', ['gradeRecordPaging', function(gradeRecordPag
      * @summary Get list of currently visible records and their details.
      */
     this.gradeRecords = function(){
-        return gradeRecordPaging.visibleRecords();
+        return gradeRecordPaging.currentRecords();
     };
 
     /**
