@@ -106,7 +106,11 @@ sgt.factory('gradeRecordPaging', ['$q', 'gradeCache', '$log', function($q, grade
         /** PRIVATE DIGEST CONTROLLER METHOD */
 
         this.digest = function(values, options){
+            if (values.hasOwnProperty('pages')){
+                cache.pages.current = values.pages;
+            }
 
+            return this.digestCurrentRecords();
         };
 
         /** PUBLIC GET METHODS */
@@ -140,6 +144,10 @@ sgt.factory('gradeRecordPaging', ['$q', 'gradeCache', '$log', function($q, grade
         };
 
         /** PUBLIC SET METHODS */
+
+        this.selectPages = function(pages){
+            this.digest({pages: pages});
+        };
 
         /** INITIALIZATIONS */
 
